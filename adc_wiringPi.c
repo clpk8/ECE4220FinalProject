@@ -35,8 +35,11 @@ int main(void)
 {
     uint16_t ADCvalue;
 
-    FILE * fp = fopen("ADC_DATA.txt","W");
-	// Configure the SPI
+    FILE * fp = fopen("ADC_DATA.txt","w");
+    if(fp == NULL){
+        printf("ERROR");
+    }
+    // Configure the SPI
 	if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
 		printf("wiringPiSPISetup failed\n");
 		return -1 ;
@@ -50,7 +53,7 @@ int main(void)
 	while(i < 1000){
 		ADCvalue = get_ADC(ADC_CHANNEL);
 		printf("ADC Value: %d\n", ADCvalue);
-        fprintf("%d\n",ADCvalue);
+        fprintf(fp,"%d\n",ADCvalue);
 		fflush(stdout);
 		usleep(1000);
         i++;
