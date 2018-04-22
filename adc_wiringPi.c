@@ -2,7 +2,7 @@
  * Based on code from: https://projects.drogon.net/raspberry-pi/wiringpi/
  * Adapted and commented by: Luis Alberto Rivera
  * ECE4220/7220
- 
+
  * Remember to compile using -lwiringPi
  */
 
@@ -13,9 +13,9 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 
-#define SPI_CHANNEL	      0	// 0 or 1
+#define SPI_CHANNEL	     0// 0 or 1
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
-#define ADC_CHANNEL       1	// Between 0 and 3
+#define ADC_CHANNEL       3	// Between 0 and 3
 
 // Note 1: The Raspberry Pi has two SPI channels. Channel 0 is used for communication
 // with the MCP3004.
@@ -34,7 +34,7 @@ uint16_t get_ADC(int channel);	// prototype
 int main(void)
 {
     uint16_t ADCvalue;
-	
+
 	// Configure the SPI
 	if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
 		printf("wiringPiSPISetup failed\n");
@@ -49,10 +49,10 @@ int main(void)
 		ADCvalue = get_ADC(ADC_CHANNEL);
 		printf("ADC Value: %d\n", ADCvalue);
 		fflush(stdout);
-		sleep(1);
+		usleep(1000);
 	}
-     
-  return 0;   
+
+  return 0;
 }
 
 // As described in sections 5 and 6 of the MCP3004 manual, we need to send three bytes
@@ -76,13 +76,13 @@ uint16_t get_ADC(int ADC_chan)
 												// M = 1 ==> single ended
 									// XX: channel selection: 00, 01, 10 or 11
 	spiData[2] = 0;	// "Don't care", this value doesn't matter.
-	
+
 	// The next function performs a simultaneous write/read transaction over the selected
 	// SPI bus. Data that was in the spiData buffer is overwritten by data returned from
 	// the SPI bus.
 	wiringPiSPIDataRW(SPI_CHANNEL, spiData, 3);
-	
+
 	// spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
-	
+
 	return ((spiData[1] << 8) | spiData[2]);
 }
