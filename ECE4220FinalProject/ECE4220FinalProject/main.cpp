@@ -30,22 +30,24 @@ int main(int argc, const char * argv[]) {
     cout << "Hello, World!\n";
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
-        fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
+       // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
+        cerr<< "Not able to setup wiringpi"<<endl;
         return 1;
     }
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
-        fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
+     //   fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
+        cerr<<"Not able to setup IRS"<<endl;
         return 1;
     }
-    
+
     while ( 1 ) {
-        cout << "eventCounter"<<endl;
+        cout << eventCounter<<endl;
         eventCounter = 0;
         delay( 1000 ); // wait 1 second
     }
-    
-    
+
+
     return 0;
 }
