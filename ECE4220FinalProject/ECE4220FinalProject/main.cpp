@@ -54,6 +54,8 @@ int main(int argc, const char * argv[]) {
     pinMode(BTN2, INPUT);
     pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
+
+
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
@@ -74,6 +76,8 @@ int main(int argc, const char * argv[]) {
     }
 
     while ( 1 ) {
+        pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
+        pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
         delay( 1000 ); // wait 1 second
