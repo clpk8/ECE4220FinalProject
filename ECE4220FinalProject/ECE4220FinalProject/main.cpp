@@ -13,6 +13,7 @@ using namespace std;
 #define LED1  8        // wiringPi number corresponding to GPIO2.
 #define LED2  9 //yellow
 #define LED3  7 //green
+#define LED4  21 //blue
 #define BTN1  27 //BTN
 #define BTN2  0
 #define SW1   26
@@ -26,6 +27,7 @@ void myInterrupt(void) {
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
     
     delay(500);
     
@@ -66,11 +68,11 @@ int main(int argc, const char * argv[]) {
         cerr<<"Not able to setup IRS"<<endl;
         return 1;
     }
-    if ( wiringPiISR (SW1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return 1;
     }
-    if ( wiringPiISR (SW2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return 1;
     }
