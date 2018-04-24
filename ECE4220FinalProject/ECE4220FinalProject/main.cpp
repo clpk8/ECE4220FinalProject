@@ -22,11 +22,24 @@ using namespace std;
 volatile int eventCounter = 0;
 
 void myInterrupt(void) {
-    eventCounter++;
+    //eventCounter++;
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    
+    delay(500);
+    
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    
+    delay(500);
 }
 
 int main(int argc, const char * argv[]) {
     // insert code here...
+
+    
     cout << "Hello, World!\n";
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
@@ -34,10 +47,28 @@ int main(int argc, const char * argv[]) {
         cerr<< "Not able to setup wiringpi"<<endl;
         return 1;
     }
+    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(SW1, INPUT);
+    pinMode(SW2, INPUT);
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
-     //   fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
+        cerr<<"Not able to setup IRS"<<endl;
+        return 1;
+    }
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return 1;
+    }
+    if ( wiringPiISR (SW1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return 1;
+    }
+    if ( wiringPiISR (SW2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return 1;
     }
