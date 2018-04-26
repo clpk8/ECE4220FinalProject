@@ -47,6 +47,7 @@ private:
     unsigned short Voltage;
     string typeEvent;
 public:
+    int count[4];
     RTU();
     void setTime();
     void setRTUid(int id);
