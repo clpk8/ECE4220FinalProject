@@ -32,7 +32,7 @@ using namespace std;
 int portNum;
 time_t rawtime;
 struct tm * timeinfo;
-
+using namespace std;
 //event counter
 volatile int eventCounter = 0;
 
@@ -40,23 +40,30 @@ void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
     //printf ("Current local time and date: %s", asctime(timeinfo));
-    cout << "Current local time and tate is : " << asctime(timeinfo) << endl;
-    //eventCounter++;
+    cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
-    
+
     delay(500);
-    
+
     digitalWrite(LED1,HIGH);
     digitalWrite(LED2,HIGH);
     digitalWrite(LED3,HIGH);
-    
+
     delay(500);
 }
 
+<<<<<<< HEAD
 void wiringPiSetup(){
+=======
+int main(int argc, const char * argv[]) {
+    // insert code here...
+
+
+    cout << "Hello, World!\n";
+>>>>>>> 2415a7c9347407fd8f37bd9d6c1021958be72149
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
@@ -66,9 +73,9 @@ void wiringPiSetup(){
     pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
-    pinMode(SW1, INPUT);
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
     
     
