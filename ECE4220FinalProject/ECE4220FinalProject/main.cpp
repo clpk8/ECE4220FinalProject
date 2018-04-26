@@ -20,12 +20,14 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <stdlib.h>     /* atoi */
+#include <chrono>
+
 
 using namespace std;
 #define LED1  8        // wiringPi number corresponding to GPIO2.
 #define LED2  9 //yellow
 #define LED3  7 //green
-#define LED4  21 //blue
+#define LED4  21 // blue
 #define BTN1  27 //BTN
 #define BTN2  0
 #define SW1   26
@@ -69,7 +71,11 @@ void RTU::print(){
 void RTU::setTime(){
     time (&rawtime);
     timeinfo = localtime (&rawtime);
+    const int TIME_STRING_LENGTH = 20;
+    char buffer [TIME_STRING_LENGTH];
+    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", currentTime);
     cout << "Current local time and date: " << asctime(timeinfo) << endl;
+    cout << buffer << endl;
 }
 void RTU::setRTUid(int id){
     RTUid = id;
