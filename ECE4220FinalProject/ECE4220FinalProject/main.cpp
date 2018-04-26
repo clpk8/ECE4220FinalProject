@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include <wiringPi.h>
+//#include <wiringPi.h>
 #include <time.h>       /* time_t, struct tm, time, localtime */
 #include <unistd.h>
 #include <string.h>
@@ -31,19 +31,75 @@ using namespace std;
 #define SW2   23
 #define MSG_SIZE 40            // message size
 int portNum;
-time_t rawtime;
-struct tm * timeinfo;
+
 using namespace std;
+
+class RTU{
+private:
+    time_t rawtime;
+    struct tm * timeinfo;
+    int RTUid;
+    //buttons, True for on and open. False for closed and off
+    bool S1;
+    bool S2;
+    bool B1;
+    bool B2;
+    unsigned short Voltage;
+    string typeEvent;
+public:
+    void setTime();
+    void setRTUid(int id);
+    void setStatus(int choice, bool change);
+    void setVoltage(unsigned short V);
+    void setTypeEvent(string str);
+
+};
+void RTU::setTime(){
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    cout << "Current local time and date: " << asctime(timeinfo) << endl;
+}
+void RTU::setRTUid(int id){
+    RTUid = id;
+}
+void RTU::setStatus(int choice, bool change){
+    switch (choice) {
+        case 1:
+            S1 = change;
+            break;
+        case 2:
+            S2 = change;
+            break;
+        case 3:
+            B1 = change;
+            break;
+        case 4:
+            B2 = change;
+            break;
+        default:
+            cout << "set status failed" << endl;
+            break;
+    }
+}
+void RTU::setVoltage(unsigned short V){
+    Voltage = V;
+}
+void RTU::setTypeEvent(string str){
+    typeEvent = str;
+}
+
+
+
 //event counter
 volatile int eventCounter = 0;
 
 
 
-void myInterrupt(void) {
-    time (&rawtime);
-    timeinfo = localtime (&rawtime);
+void myInterrupt(RTU &r1) {
+
+    r1.setTime();
     //printf ("Current local time and date: %s", asctime(timeinfo));
-    cout << "Current local time and tate is : " << asctime(timeinfo);
+  //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
@@ -59,7 +115,7 @@ void myInterrupt(void) {
 }
 
 
-int setupWiringPiFunction() {
+int setupWiringPiFunction(RTU &r1) {
     // insert code here...
 
 
@@ -81,25 +137,27 @@ int setupWiringPiFunction() {
     
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
-    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt(r1)) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt(r1)) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt(r1)) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt(r1)) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
 }
 int main(int argc, const char * argv[]) {
-    if(setupWiringPiFunction() < 0 ){
+    
+    RTU r1 = new RTU();
+    if(setupWiringPiFunction(&r1) < 0 ){
         cerr << "Error setup RUT" << endl;
         return -1;
     }
@@ -188,7 +246,7 @@ int main(int argc, const char * argv[]) {
     //get the length
     fromlen = sizeof(struct sockaddr_in);    // size of structure
     
-    cout<<"RUTid is "<<myMachine<<endl;
+    cout<<"RUT id is "<<myMachine<<endl;
     
     while ( 1 ) {
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
