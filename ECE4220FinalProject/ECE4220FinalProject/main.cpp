@@ -33,11 +33,6 @@ using namespace std;
 #define MSG_SIZE 40            // message size
 int portNum;
 
-using namespace std;
-//----------------Time used for rebounce ------------------
-struct timeval interruptTimeB1, lastInterruptTimeB1;
-struct timeval interruptTimeB2, lastInterruptTimeB2;
-
 class RTU{
 private:
     time_t rawtime;
@@ -106,6 +101,10 @@ RTU::RTU(){
 
 //event counter
 volatile int eventCounter = 0;
+
+//----------------Time used for rebounce ------------------
+struct timeval interruptTimeB1, lastInterruptTimeB1;
+struct timeval interruptTimeB2, lastInterruptTimeB2;
 
 
 RTU r1;
