@@ -114,7 +114,7 @@ void B1Interrupt() {
     }
     else{
         r1.setStatus(1, false);
-        r1.setTypeEvent("Button is turn off")
+        r1.setTypeEvent("Button is turn off");
     }
     //printf ("Current local time and date: %s", asctime(timeinfo));
   //  cout << "Current local time and tate is : " << asctime(timeinfo);
@@ -141,7 +141,7 @@ void B2Interrupt() {
     }
     else{
         r1.setStatus(1, false);
-        r1.setTypeEvent("Button 2 is turn off")
+        r1.setTypeEvent("Button 2 is turn off");
     }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
@@ -168,7 +168,7 @@ void S1Interrupt() {
     }
     else{
         r1.setStatus(1, false);
-        r1.setTypeEvent("Switch 1 is turn off")
+        r1.setTypeEvent("Switch 1 is turn off");
     }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
@@ -195,7 +195,7 @@ void S2Interrupt() {
     }
     else{
         r1.setStatus(1, false);
-        r1.setTypeEvent("Switch 2 is turn off")
+        r1.setTypeEvent("Switch 2 is turn off");
     }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
