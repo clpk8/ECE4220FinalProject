@@ -36,6 +36,8 @@ using namespace std;
 //event counter
 volatile int eventCounter = 0;
 
+
+
 void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
@@ -55,7 +57,8 @@ void myInterrupt(void) {
     delay(500);
 }
 
-void wiringPiSetup() {
+
+int setupWiringPiFunction() {
     // insert code here...
 
 
@@ -64,7 +67,7 @@ void wiringPiSetup() {
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
         cerr<< "Not able to setup wiringpi"<<endl;
-        return 1;
+        return -1;
     }
     pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
@@ -79,30 +82,33 @@ void wiringPiSetup() {
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
     if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
     if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
     if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
 }
 int main(int argc, const char * argv[]) {
-    wiringPiSetup();
+    if(setupWiringPiFunction() < 0 ){
+        cerr << "Error setup RUT" << endl;
+        return -1;
+    }
     
 
     //makesure port number is provided
     if(argc < 2){
         
         printf("Error, Please enter the port number");
-        return EXIT_FAILURE;
+        return -1;
     }
 
     
@@ -123,7 +129,7 @@ int main(int argc, const char * argv[]) {
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
     if (sock < 0){
         cerr<<"create socker error"<<endl;
-        return EXIT_FAILURE;
+        return -1;
 
     }
 
@@ -160,14 +166,14 @@ int main(int argc, const char * argv[]) {
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
 
     // change socket permissions to allow broadcast
     if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
     {
         cerr<<"setup Socket Error"<<endl;
-        return EXIT_FAILURE;
+        return -1;
     }
     
     //set up broadcast
