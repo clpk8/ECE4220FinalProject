@@ -110,8 +110,7 @@ volatile int eventCounter = 0;
 
 RTU r1;
 void B1Interrupt() {
-    gettimeofday(&InterruptTimeB1, NULL);
-
+    gettimeofday(InterruptTimeB1, NULL);
     if(InterruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500000){
         r1.setTime();
         r1.count[0]++;
@@ -143,8 +142,8 @@ void B1Interrupt() {
    
 }
 void B2Interrupt() {
-    gettimeofday(&InterruptTimeB2, NULL);
-
+    
+    gettimeofday(InterruptTimeB2, NULL);
     if(InterruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500000){
         r1.setTime();
         r1.count[1]++;
