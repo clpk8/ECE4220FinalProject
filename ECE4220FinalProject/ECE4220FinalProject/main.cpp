@@ -88,14 +88,15 @@ void RTU::setVoltage(unsigned short V){
 void RTU::setTypeEvent(string str){
     typeEvent = str;
 }
-
-RTU r1;
+RTU::RTU(){
+    cout << "Globel RTU initilize"<<endl;
+}
 
 //event counter
 volatile int eventCounter = 0;
 
 
-
+RTU r1;
 void myInterrupt() {
 
     r1.setTime();
@@ -115,7 +116,6 @@ void myInterrupt() {
     delay(500);
 }
 
-
 int setupWiringPiFunction() {
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
@@ -134,26 +134,26 @@ int setupWiringPiFunction() {
 
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
-    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt()) < 0 ) {
+    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt()) < 0 ) {
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt()) < 0 ) {
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt()) < 0 ) {
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
 }
 int main(int argc, const char * argv[]) {
 
-    //RTU r1 = new RTU();
+    //RTU r1;
     if(setupWiringPiFunction() < 0 ){
         cerr << "Error setup RUT" << endl;
         return -1;
