@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <net/if.h>
 #include <arpa/inet.h>
+#include <stdlib.h>     /* atoi */
 
 using namespace std;
 #define LED1  8        // wiringPi number corresponding to GPIO2.
@@ -107,17 +108,20 @@ int main(int argc, const char * argv[]) {
     //makesure port number is provided
     if(argc < 2){
         
-        printf("Error, Please enter the port number");
+        cout << "Please enter port number" << endl;
         return -1;
     }
 
     
     int sock, length, n;
+    int boolval = 1; //use for socket option, to allow broadcast
     struct sockaddr_in server, broadcast, clint; //define structures
     char buf[MSG_SIZE]; //define buf
     socklen_t fromlen;
     struct ifreq ifr;
     char ip_address[13];
+    const char s[2] = " ";
+    const char c[2] = ".";
     //get IP
     /*AF_INET - to define IPv4 Address type.*/
     ifr.ifr_addr.sa_family = AF_INET;
@@ -152,7 +156,7 @@ int main(int argc, const char * argv[]) {
     strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
     
     //parsing to get machine number
-    printf("System IP Address is: %s\n",ip_address);
+    cout << "System IP Address is : "<< ip_address << endl;
     char temp[13];
     strcpy(temp, ip_address);
     char* token = strtok(temp,c);
