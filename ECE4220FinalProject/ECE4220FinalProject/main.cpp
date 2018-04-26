@@ -113,7 +113,7 @@ RTU r1;
 void B1Interrupt() {
     gettimeofday(&interruptTimeB1, NULL);
     cout << "interrupt happened" << endl;
-    if(interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 50){
+    if((interruptTimeB1.tv_sec - lastInterruptTimeB1.tv_sec)*1000000 + (interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec) > 500000){
         r1.setTime();
         r1.count[0]++;
         //odd is on
@@ -147,7 +147,7 @@ void B2Interrupt() {
 
     gettimeofday(&interruptTimeB2, NULL);
     cout << "interrupt happened" << endl;
-    if(interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 50){
+    if(((interruptTimeB2.tv_sec - lastInterruptTimeB2.tv_sec)*1000000 + (interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec) > 500000)){
         r1.setTime();
         r1.count[1]++;
         if(r1.count[1] %2 == 1){
