@@ -35,6 +35,8 @@ int portNum;
 //----------------Time used for rebounce ------------------
 struct timeval interruptTimeB1, lastInterruptTimeB1;
 struct timeval interruptTimeB2, lastInterruptTimeB2;
+
+using namespace std;
 class RTU{
 private:
     time_t rawtime;
@@ -110,7 +112,7 @@ volatile int eventCounter = 0;
 RTU r1;
 void B1Interrupt() {
     gettimeofday(&interruptTimeB1, NULL);
-    if(InterruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500000){
+    if(interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500000){
         r1.setTime();
         r1.count[0]++;
         //odd is on
@@ -128,22 +130,22 @@ void B1Interrupt() {
         digitalWrite(LED2,LOW);
         digitalWrite(LED3,LOW);
         digitalWrite(LED4,LOW);
-        
+
         delay(500);
-        
+
         digitalWrite(LED1,HIGH);
         digitalWrite(LED2,HIGH);
         digitalWrite(LED3,HIGH);
-        
+
         delay(500);
     }
-    lastInterruptTimeB1.tv_usec = InterruptTimeB1.tv_usec;
-   
+    lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
+
 }
 void B2Interrupt() {
-    
+
     gettimeofday(&interruptTimeB2, NULL);
-    if(InterruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500000){
+    if(interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500000){
         r1.setTime();
         r1.count[1]++;
         if(r1.count[1] %2 == 1){
@@ -160,17 +162,17 @@ void B2Interrupt() {
         digitalWrite(LED2,LOW);
         digitalWrite(LED3,LOW);
         digitalWrite(LED4,LOW);
-        
+
         delay(500);
-        
+
         digitalWrite(LED1,HIGH);
         digitalWrite(LED2,HIGH);
         digitalWrite(LED3,HIGH);
-        
+
         delay(500);
     }
 
-    lastInterruptTimeB2.tv_usec = InterruptTimeB2.tv_usec;
+    lastInterruptTimeB2.tv_usec = interruptTimeB2.tv_usec;
 
 }
 void S1Interrupt() {
