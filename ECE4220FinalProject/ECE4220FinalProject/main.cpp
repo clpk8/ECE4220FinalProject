@@ -55,8 +55,7 @@ void myInterrupt(void) {
     delay(500);
 }
 
-void wiringPiSetup(){
-int main(int argc, const char * argv[]) {
+void wiringPiSetup() {
     // insert code here...
 
 
