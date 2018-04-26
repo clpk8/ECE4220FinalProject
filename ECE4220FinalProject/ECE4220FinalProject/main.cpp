@@ -30,7 +30,7 @@ void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
     //printf ("Current local time and date: %s", asctime(timeinfo));
-  //  cout << "Current local time and tate is : " << asctime(timeinfo);
+    cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
