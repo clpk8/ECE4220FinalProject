@@ -47,7 +47,7 @@ private:
     unsigned short Voltage;
     string typeEvent;
 public:
-    int count[] = {0,0,0,0};
+    int count[4] = {0,0,0,0};
     RTU();
     void setTime();
     void setRTUid(int id);
@@ -108,7 +108,7 @@ void B1Interrupt() {
     r1.setTime();
     r1.count[0]++;
     //odd is on
-    if(count[0] %2 == 1)
+    if(r1.count[0] %2 == 1)
         r1.setStatus(1, true);
     else
         r1.setStatus(1, false);
@@ -128,10 +128,10 @@ void B1Interrupt() {
     delay(500);
 }
 void B2Interrupt() {
-    
+
     r1.setTime();
     r1.count[1]++;
-    if(count[1] %2 == 1)
+    if(r1.count[1] %2 == 1)
         r1.setStatus(2, true);
     else
         r1.setStatus(2, false);
@@ -141,20 +141,20 @@ void B2Interrupt() {
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
-    
+
     delay(500);
-    
+
     digitalWrite(LED1,HIGH);
     digitalWrite(LED2,HIGH);
     digitalWrite(LED3,HIGH);
-    
+
     delay(500);
 }
 void S1Interrupt() {
-    
+
     r1.setTime();
     r1.count[2]++;
-    if(count[2] %2 == 1)
+    if(r1.count[2] %2 == 1)
         r1.setStatus(3, true);
     else
         r1.setStatus(3, false);
@@ -164,20 +164,20 @@ void S1Interrupt() {
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
-    
+
     delay(500);
-    
+
     digitalWrite(LED1,HIGH);
     digitalWrite(LED2,HIGH);
     digitalWrite(LED3,HIGH);
-    
+
     delay(500);
 }
 void S2Interrupt() {
-    
+
     r1.setTime();
     r1.count[3]++;
-    if(count[3] %2 == 1)
+    if(r1.count[3] %2 == 1)
         r1.setStatus(4, true);
     else
         r1.setStatus(4, false);
@@ -187,13 +187,13 @@ void S2Interrupt() {
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
-    
+
     delay(500);
-    
+
     digitalWrite(LED1,HIGH);
     digitalWrite(LED2,HIGH);
     digitalWrite(LED3,HIGH);
-    
+
     delay(500);
 }
 
