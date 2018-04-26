@@ -47,15 +47,20 @@ private:
     unsigned short Voltage;
     string typeEvent;
 public:
-    int count[4];
+    int count[] = {0,0,0,0};
     RTU();
     void setTime();
     void setRTUid(int id);
     void setStatus(int choice, bool change);
     void setVoltage(unsigned short V);
     void setTypeEvent(string str);
+    void print();
 
 };
+void RTU::print(){
+    cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << S2 << " " << endl;
+    cout << "The event happened is " << typeEvent << endl;
+}
 void RTU::setTime(){
     time (&rawtime);
     timeinfo = localtime (&rawtime);
@@ -67,16 +72,16 @@ void RTU::setRTUid(int id){
 void RTU::setStatus(int choice, bool change){
     switch (choice) {
         case 1:
-            S1 = change;
-            break;
-        case 2:
-            S2 = change;
-            break;
-        case 3:
             B1 = change;
             break;
-        case 4:
+        case 2:
             B2 = change;
+            break;
+        case 3:
+            S1 = change;
+            break;
+        case 4:
+            S2 = change;
             break;
         default:
             cout << "set status failed" << endl;
@@ -98,9 +103,15 @@ volatile int eventCounter = 0;
 
 
 RTU r1;
-void myInterrupt() {
+void B1Interrupt() {
 
     r1.setTime();
+    r1.count[0]++;
+    //odd is on
+    if(count[0] %2 == 1)
+        r1.setStatus(1, true);
+    else
+        r1.setStatus(1, false);
     //printf ("Current local time and date: %s", asctime(timeinfo));
   //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -116,6 +127,76 @@ void myInterrupt() {
 
     delay(500);
 }
+void B2Interrupt() {
+    
+    r1.setTime();
+    r1.count[1]++;
+    if(count[1] %2 == 1)
+        r1.setStatus(2, true);
+    else
+        r1.setStatus(2, false);
+    //printf ("Current local time and date: %s", asctime(timeinfo));
+    //  cout << "Current local time and tate is : " << asctime(timeinfo);
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
+    
+    delay(500);
+    
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    
+    delay(500);
+}
+void S1Interrupt() {
+    
+    r1.setTime();
+    r1.count[2]++;
+    if(count[2] %2 == 1)
+        r1.setStatus(3, true);
+    else
+        r1.setStatus(3, false);
+    //printf ("Current local time and date: %s", asctime(timeinfo));
+    //  cout << "Current local time and tate is : " << asctime(timeinfo);
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
+    
+    delay(500);
+    
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    
+    delay(500);
+}
+void S2Interrupt() {
+    
+    r1.setTime();
+    r1.count[3]++;
+    if(count[3] %2 == 1)
+        r1.setStatus(4, true);
+    else
+        r1.setStatus(4, false);
+    //printf ("Current local time and date: %s", asctime(timeinfo));
+    //  cout << "Current local time and tate is : " << asctime(timeinfo);
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
+    
+    delay(500);
+    
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,HIGH);
+    
+    delay(500);
+}
+
 
 int setupWiringPiFunction() {
     // sets up the wiringPi library
@@ -135,19 +216,19 @@ int setupWiringPiFunction() {
 
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
-    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &B1Interrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &B2Interrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &S1Interrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &S2Interrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
@@ -247,6 +328,7 @@ int main(int argc, const char * argv[]) {
     cout<<"RUT id is "<<myMachine<<endl;
 
     while ( 1 ) {
+        r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
