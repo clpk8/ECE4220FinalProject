@@ -47,6 +47,7 @@ private:
     unsigned short Voltage;
     string typeEvent;
 public:
+    RTU();
     void setTime();
     void setRTUid(int id);
     void setStatus(int choice, bool change);
@@ -88,14 +89,14 @@ void RTU::setTypeEvent(string str){
     typeEvent = str;
 }
 
-
+RTU r1;
 
 //event counter
 volatile int eventCounter = 0;
 
 
 
-void myInterrupt(RTU &r1) {
+void myInterrupt() {
 
     r1.setTime();
     //printf ("Current local time and date: %s", asctime(timeinfo));
@@ -115,11 +116,7 @@ void myInterrupt(RTU &r1) {
 }
 
 
-int setupWiringPiFunction(RTU &r1) {
-    // insert code here...
-
-
-    cout << "Hello, World!\n";
+int setupWiringPiFunction() {
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
@@ -137,27 +134,27 @@ int setupWiringPiFunction(RTU &r1) {
 
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
-    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt(r1)) < 0 ) {
+    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt()) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt(r1)) < 0 ) {
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt()) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt(r1)) < 0 ) {
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt()) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
-    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt(r1)) < 0 ) {
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt()) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
 }
 int main(int argc, const char * argv[]) {
 
-    RTU r1 = new RTU();
-    if(setupWiringPiFunction(&r1) < 0 ){
+    //RTU r1 = new RTU();
+    if(setupWiringPiFunction() < 0 ){
         cerr << "Error setup RUT" << endl;
         return -1;
     }
