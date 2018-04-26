@@ -55,15 +55,12 @@ void myInterrupt(void) {
     delay(500);
 }
 
-<<<<<<< HEAD
 void wiringPiSetup(){
-=======
 int main(int argc, const char * argv[]) {
     // insert code here...
 
 
     cout << "Hello, World!\n";
->>>>>>> 2415a7c9347407fd8f37bd9d6c1021958be72149
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
