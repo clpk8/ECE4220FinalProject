@@ -58,7 +58,7 @@ public:
 
 };
 void RTU::print(){
-    cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << S2 << " " << endl;
+    cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
     cout << "The event happened is " << typeEvent << endl;
 }
 void RTU::setTime(){
@@ -108,10 +108,14 @@ void B1Interrupt() {
     r1.setTime();
     r1.count[0]++;
     //odd is on
-    if(r1.count[0] %2 == 1)
+    if(r1.count[0] %2 == 1){
         r1.setStatus(1, true);
-    else
+        r1.setTypeEvent("Button is turn on");
+    }
+    else{
         r1.setStatus(1, false);
+        r1.setTypeEvent("Button is turn off")
+    }
     //printf ("Current local time and date: %s", asctime(timeinfo));
   //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -131,10 +135,14 @@ void B2Interrupt() {
 
     r1.setTime();
     r1.count[1]++;
-    if(r1.count[1] %2 == 1)
-        r1.setStatus(2, true);
-    else
-        r1.setStatus(2, false);
+    if(r1.count[1] %2 == 1){
+        r1.setStatus(1, true);
+        r1.setTypeEvent("Button 2 is turn on");
+    }
+    else{
+        r1.setStatus(1, false);
+        r1.setTypeEvent("Button 2 is turn off")
+    }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -154,10 +162,14 @@ void S1Interrupt() {
 
     r1.setTime();
     r1.count[2]++;
-    if(r1.count[2] %2 == 1)
-        r1.setStatus(3, true);
-    else
-        r1.setStatus(3, false);
+    if(r1.count[3] %2 == 1){
+        r1.setStatus(1, true);
+        r1.setTypeEvent("Switch 1 is turn on");
+    }
+    else{
+        r1.setStatus(1, false);
+        r1.setTypeEvent("Switch 1 is turn off")
+    }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -177,10 +189,14 @@ void S2Interrupt() {
 
     r1.setTime();
     r1.count[3]++;
-    if(r1.count[3] %2 == 1)
-        r1.setStatus(4, true);
-    else
-        r1.setStatus(4, false);
+    if(r1.count[4] %2 == 1){
+        r1.setStatus(1, true);
+        r1.setTypeEvent("Switch 2 is turn on");
+    }
+    else{
+        r1.setStatus(1, false);
+        r1.setTypeEvent("Switch 2 is turn off")
+    }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
