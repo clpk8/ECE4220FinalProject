@@ -73,7 +73,7 @@ void RTU::setTime(){
     timeinfo = localtime (&rawtime);
     const int TIME_STRING_LENGTH = 20;
     char buffer [TIME_STRING_LENGTH];
-    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", currentTime);
+    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", timeinfo);
     cout << "Current local time and date: " << asctime(timeinfo) << endl;
     cout << buffer << endl;
 }
