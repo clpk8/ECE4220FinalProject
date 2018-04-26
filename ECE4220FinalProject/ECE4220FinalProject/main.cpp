@@ -33,6 +33,9 @@ using namespace std;
 int portNum;
 
 using namespace std;
+//----------------Time used for rebounce ------------------
+struct timeval interruptTimeB1, lastInterruptTimeB1;
+struct timeval interruptTimeB2, lastInterruptTimeB2;
 
 class RTU{
 private:
@@ -106,59 +109,70 @@ volatile int eventCounter = 0;
 
 RTU r1;
 void B1Interrupt() {
+    gettimeofday(&InterruptTimeB1, NULL);
 
-    r1.setTime();
-    r1.count[0]++;
-    //odd is on
-    if(r1.count[0] %2 == 1){
-        r1.setStatus(1, true);
-        r1.setTypeEvent("Button is turn on");
+    if(InterruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500000){
+        r1.setTime();
+        r1.count[0]++;
+        //odd is on
+        if(r1.count[0] %2 == 1){
+            r1.setStatus(1, true);
+            r1.setTypeEvent("Button is turn on");
+        }
+        else{
+            r1.setStatus(1, false);
+            r1.setTypeEvent("Button is turn off");
+        }
+        //printf ("Current local time and date: %s", asctime(timeinfo));
+        //  cout << "Current local time and tate is : " << asctime(timeinfo);
+        digitalWrite(LED1,LOW);
+        digitalWrite(LED2,LOW);
+        digitalWrite(LED3,LOW);
+        digitalWrite(LED4,LOW);
+        
+        delay(500);
+        
+        digitalWrite(LED1,HIGH);
+        digitalWrite(LED2,HIGH);
+        digitalWrite(LED3,HIGH);
+        
+        delay(500);
     }
-    else{
-        r1.setStatus(1, false);
-        r1.setTypeEvent("Button is turn off");
-    }
-    //printf ("Current local time and date: %s", asctime(timeinfo));
-  //  cout << "Current local time and tate is : " << asctime(timeinfo);
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
-    digitalWrite(LED3,LOW);
-    digitalWrite(LED4,LOW);
-
-    delay(500);
-
-    digitalWrite(LED1,HIGH);
-    digitalWrite(LED2,HIGH);
-    digitalWrite(LED3,HIGH);
-
-    delay(500);
+    lastInterruptTimeB1.tv_usec = InterruptTimeB1.tv_usec;
+   
 }
 void B2Interrupt() {
+    gettimeofday(&InterruptTimeB2, NULL);
 
-    r1.setTime();
-    r1.count[1]++;
-    if(r1.count[1] %2 == 1){
-        r1.setStatus(2, true);
-        r1.setTypeEvent("Button 2 is turn on");
+    if(InterruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500000){
+        r1.setTime();
+        r1.count[1]++;
+        if(r1.count[1] %2 == 1){
+            r1.setStatus(2, true);
+            r1.setTypeEvent("Button 2 is turn on");
+        }
+        else{
+            r1.setStatus(2, false);
+            r1.setTypeEvent("Button 2 is turn off");
+        }
+        //printf ("Current local time and date: %s", asctime(timeinfo));
+        //  cout << "Current local time and tate is : " << asctime(timeinfo);
+        digitalWrite(LED1,LOW);
+        digitalWrite(LED2,LOW);
+        digitalWrite(LED3,LOW);
+        digitalWrite(LED4,LOW);
+        
+        delay(500);
+        
+        digitalWrite(LED1,HIGH);
+        digitalWrite(LED2,HIGH);
+        digitalWrite(LED3,HIGH);
+        
+        delay(500);
     }
-    else{
-        r1.setStatus(2, false);
-        r1.setTypeEvent("Button 2 is turn off");
-    }
-    //printf ("Current local time and date: %s", asctime(timeinfo));
-    //  cout << "Current local time and tate is : " << asctime(timeinfo);
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
-    digitalWrite(LED3,LOW);
-    digitalWrite(LED4,LOW);
 
-    delay(500);
+    lastInterruptTimeB2.tv_usec = InterruptTimeB2.tv_usec;
 
-    digitalWrite(LED1,HIGH);
-    digitalWrite(LED2,HIGH);
-    digitalWrite(LED3,HIGH);
-
-    delay(500);
 }
 void S1Interrupt() {
 
@@ -259,6 +273,8 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
 
+    gettimeofday(&lastInterruptTimeB1, NULL);
+    gettimeofday(&lastInterruptTimeB2, NULL);
 
     //makesure port number is provided
     if(argc < 2){
