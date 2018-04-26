@@ -112,7 +112,8 @@ volatile int eventCounter = 0;
 RTU r1;
 void B1Interrupt() {
     gettimeofday(&interruptTimeB1, NULL);
-    if(interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500){
+    cout << "interrupt happened" << endl;
+    if(interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 50){
         r1.setTime();
         r1.count[0]++;
         //odd is on
@@ -145,7 +146,8 @@ void B1Interrupt() {
 void B2Interrupt() {
 
     gettimeofday(&interruptTimeB2, NULL);
-    if(interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500){
+    cout << "interrupt happened" << endl;
+    if(interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 50){
         r1.setTime();
         r1.count[1]++;
         if(r1.count[1] %2 == 1){
