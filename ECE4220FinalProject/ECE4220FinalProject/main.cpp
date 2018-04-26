@@ -36,6 +36,13 @@ using namespace std;
 //event counter
 volatile int eventCounter = 0;
 
+//errpr message function
+void error(const char *msg)
+{
+    perror(msg);
+    exit(0);
+}
+
 void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
