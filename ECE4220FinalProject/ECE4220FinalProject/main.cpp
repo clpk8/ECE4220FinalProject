@@ -174,7 +174,7 @@ void S1Interrupt() {
     }
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
-    digitalWrite(LED1,LOW);:
+    digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
