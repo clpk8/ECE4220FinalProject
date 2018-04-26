@@ -36,13 +36,6 @@ using namespace std;
 //event counter
 volatile int eventCounter = 0;
 
-//errpr message function
-void error(const char *msg)
-{
-    perror(msg);
-    exit(0);
-}
-
 void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
@@ -86,19 +79,19 @@ void wiringPiSetup() {
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return 1;
+        return EXIT_FAILURE;
     }
     if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return 1;
+        return EXIT_FAILURE;
     }
     if ( wiringPiISR (SW1, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return 1;
+        return EXIT_FAILURE;
     }
     if ( wiringPiISR (SW2, INT_EDGE_BOTH, &myInterrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
-        return 1;
+        return EXIT_FAILURE;
     }
 }
 int main(int argc, const char * argv[]) {
@@ -109,7 +102,7 @@ int main(int argc, const char * argv[]) {
     if(argc < 2){
         
         printf("Error, Please enter the port number");
-        exit(-1);
+        return EXIT_FAILURE;
     }
 
     
@@ -128,9 +121,12 @@ int main(int argc, const char * argv[]) {
     
     //set up the socket
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
-    if (sock < 0)
-        error("Opening socket");
-    
+    if (sock < 0){
+        cerr<<"create socker error"<<endl;
+        return EXIT_FAILURE;
+
+    }
+
     length = sizeof(broadcast);            // length of structure
     bzero(&broadcast,length);            // sets all values to zero. memset() could be used
     
@@ -162,14 +158,16 @@ int main(int argc, const char * argv[]) {
     int myMachine = atoi(token);
     
     // binds the socket to the address of the host and the port number
-    if (bind(sock, (struct sockaddr *)&server, length) < 0)
-        //        error("binding");
-        printf("2");
+    if (bind(sock, (struct sockaddr *)&server, length) < 0){
+        cerr<<"bind Error"<<endl;
+        return EXIT_FAILURE;
+    }
+
     // change socket permissions to allow broadcast
     if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
     {
-        printf("error setting socket options\n");
-        exit(-1);
+        cerr<<"setup Socket Error"<<endl;
+        return EXIT_FAILURE;
     }
     
     //set up broadcast
