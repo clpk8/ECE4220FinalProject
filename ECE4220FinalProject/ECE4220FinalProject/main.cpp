@@ -22,7 +22,7 @@ using namespace std;
 
 time_t rawtime;
 struct tm * timeinfo;
-
+using namespace std;
 //event counter
 volatile int eventCounter = 0;
 
@@ -30,26 +30,25 @@ void myInterrupt(void) {
     time (&rawtime);
     timeinfo = localtime (&rawtime);
     //printf ("Current local time and date: %s", asctime(timeinfo));
-    cout << "Current local time and tate is : " << asctime(timeinfo) << endl;
-    //eventCounter++;
+  //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
-    
+
     delay(500);
-    
+
     digitalWrite(LED1,HIGH);
     digitalWrite(LED2,HIGH);
     digitalWrite(LED3,HIGH);
-    
+
     delay(500);
 }
 
 int main(int argc, const char * argv[]) {
     // insert code here...
 
-    
+
     cout << "Hello, World!\n";
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
@@ -60,9 +59,9 @@ int main(int argc, const char * argv[]) {
     pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
-    pinMode(SW1, INPUT);
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
 
 
