@@ -33,8 +33,8 @@ using namespace std;
 #define MSG_SIZE 40            // message size
 int portNum;
 //----------------Time used for rebounce ------------------
-clock_t interruptTimeB1, lastInterruptTimeB1;
-clock_t interruptTimeB2, lastInterruptTimeB2;
+struct timeval interruptTimeB1, lastInterruptTimeB1;
+struct timeval interruptTimeB2, lastInterruptTimeB2;
 class RTU{
 private:
     time_t rawtime;
@@ -109,8 +109,8 @@ volatile int eventCounter = 0;
 
 RTU r1;
 void B1Interrupt() {
-    InterruptTimeB1 = clock();
-    if(float(InterruptTimeB1 - lastInterruptTimeB1) > 500){
+    gettimeofday(&interruptTimeB1, NULL);
+    if(InterruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec > 500000){
         r1.setTime();
         r1.count[0]++;
         //odd is on
@@ -142,8 +142,8 @@ void B1Interrupt() {
 }
 void B2Interrupt() {
     
-    InterruptTimeB1 = clock();
-    if(float(InterruptTimeB1 - lastInterruptTimeB1) > 500){
+    gettimeofday(&interruptTimeB2, NULL);
+    if(InterruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec > 500000){
         r1.setTime();
         r1.count[1]++;
         if(r1.count[1] %2 == 1){
@@ -272,8 +272,8 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
 
-    lastInterruptTimeB1 = clock();
-    lastInterruptTimeB2 = clock();
+    gettimeofday(&lastInterruptTimeB1, NULL);
+    gettimeofday(&lastInterruptTimeB2, NULL);
 
     //makesure port number is provided
     if(argc < 2){
