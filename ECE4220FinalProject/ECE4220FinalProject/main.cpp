@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-//#include <wiringPi.h>
+#include <wiringPi.h>
 #include <time.h>       /* time_t, struct tm, time, localtime */
 #include <unistd.h>
 #include <string.h>
@@ -133,8 +133,8 @@ int setupWiringPiFunction(RTU &r1) {
     pinMode(BTN2, INPUT);
     pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
-    
-    
+
+
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &myInterrupt(r1)) < 0 ) {
@@ -155,22 +155,22 @@ int setupWiringPiFunction(RTU &r1) {
     }
 }
 int main(int argc, const char * argv[]) {
-    
+
     RTU r1 = new RTU();
     if(setupWiringPiFunction(&r1) < 0 ){
         cerr << "Error setup RUT" << endl;
         return -1;
     }
-    
+
 
     //makesure port number is provided
     if(argc < 2){
-        
+
         cout << "Please enter port number" << endl;
         return -1;
     }
 
-    
+
     int sock, length, n;
     int boolval = 1; //use for socket option, to allow broadcast
     struct sockaddr_in server, broadcast, clint; //define structures
@@ -186,7 +186,7 @@ int main(int argc, const char * argv[]) {
     /*wlan0 - define the ifr_name - port name
      where network attached.*/
     memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
-    
+
     //set up the socket
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
     if (sock < 0){
@@ -197,10 +197,10 @@ int main(int argc, const char * argv[]) {
 
     length = sizeof(broadcast);            // length of structure
     bzero(&broadcast,length);            // sets all values to zero. memset() could be used
-    
+
     length = sizeof(server);            // length of structure
     bzero(&server,length);            // sets all values to zero. memset() could be used
-    
+
     //initilize the server
     server.sin_family = AF_INET;        // symbol constant for Internet domain
     server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
@@ -210,9 +210,9 @@ int main(int argc, const char * argv[]) {
     /*Accessing network interface information by
      passing address using ioctl.*/
     ioctl(sock, SIOCGIFADDR, &ifr);
-    
+
     strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-    
+
     //parsing to get machine number
     cout << "System IP Address is : "<< ip_address << endl;
     char temp[13];
@@ -224,7 +224,7 @@ int main(int argc, const char * argv[]) {
     }
     token = strtok(temp, s);
     int myMachine = atoi(token);
-    
+
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
@@ -237,17 +237,17 @@ int main(int argc, const char * argv[]) {
         cerr<<"setup Socket Error"<<endl;
         return -1;
     }
-    
+
     //set up broadcast
     broadcast.sin_addr.s_addr = inet_addr("128.206.19.255");
     broadcast.sin_family = AF_INET;
     broadcast.sin_port = htons(atoi(argv[1]));    // port number
-    
+
     //get the length
     fromlen = sizeof(struct sockaddr_in);    // size of structure
-    
+
     cout<<"RUT id is "<<myMachine<<endl;
-    
+
     while ( 1 ) {
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
@@ -256,7 +256,7 @@ int main(int argc, const char * argv[]) {
         delay( 1000 ); // wait 1 second
     }
 
-    
+
 
     return 0;
 }
