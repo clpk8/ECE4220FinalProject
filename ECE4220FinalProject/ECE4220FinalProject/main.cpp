@@ -59,7 +59,7 @@ public:
 };
 void RTU::print(){
     cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
-    cout << "Status for S1,S2,B1,B2:" << count[0] << " " << count[1] << " " << count[2] << " " << count[3] << " " << endl;
+    cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
 
     cout << "The event happened is " << typeEvent << endl;
 }
