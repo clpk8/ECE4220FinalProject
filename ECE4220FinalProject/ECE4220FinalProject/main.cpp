@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <wiringPi.h>
+#include <time.h>       /* time_t, struct tm, time, localtime */
 
 using namespace std;
 #define LED1  8        // wiringPi number corresponding to GPIO2.
@@ -19,10 +20,17 @@ using namespace std;
 #define SW1   26
 #define SW2   23
 
+time_t rawtime;
+struct tm * timeinfo;
+
 //event counter
 volatile int eventCounter = 0;
 
 void myInterrupt(void) {
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    //printf ("Current local time and date: %s", asctime(timeinfo));
+    cout << "Current local time and tate is : " << asctime(timeinfo) << endl;
     //eventCounter++;
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
