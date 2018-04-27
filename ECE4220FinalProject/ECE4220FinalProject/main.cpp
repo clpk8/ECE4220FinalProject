@@ -394,7 +394,7 @@ void *readingADC(void* ptr){
 
 class socket{
 private:
-    int socket;
+    int sock;
     int length;
     int n;
     int port;
@@ -417,7 +417,6 @@ void socket::setupSocket(){
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
     if (sock < 0){
         cerr<<"create socker error"<<endl;
-        return -1;
         
     }
     
@@ -433,16 +432,15 @@ void socket::setupSocket(){
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
-        return -1;
     }
     // change socket permissions to allow broadcast
     if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
     {
         cerr<<"setup Socket Error"<<endl;
-        return -1;
     }
     n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
-
+    if(n < 0)
+        cerr << "receive error " << endl;
     
     //get the length
     fromlen = sizeof(struct sockaddr_in);    // size of structure
@@ -454,10 +452,13 @@ void socket::send(){
 
 }
 
+socket s1;
 
 int main(int argc, const char * argv[]) {
 
-    port = atoi(argv[1]);
+    
+    s1.getPort(atoi(argc[1]));
+    s1.setupSocket();
     //RTU r1;
     if(setupWiringPiFunction() < 0 ){
         cerr << "Error setup RUT" << endl;
