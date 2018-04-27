@@ -392,7 +392,7 @@ void *readingADC(void* ptr){
 
 }
 
-class socket{
+class socketObj{
 private:
     int sock;
     int length;
@@ -409,10 +409,10 @@ public:
     void setupSocket();
     void send();
 };
-void socket::getPort(int num){
+void socketObj::getPort(int num){
     port = num;
 }
-void socket::setupSocket(){
+void socketObj::setupSocket(){
     int boolval = 1; //use for socket option, to allow broadcast
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
     if (sock < 0){
@@ -446,14 +446,13 @@ void socket::setupSocket(){
     fromlen = sizeof(struct sockaddr_in);    // size of structure
 }
 
-void socket::send(){
+void socketObj::send(){
     
     n = sendto(sock, "Got your message\n", 17, 0, (struct sockaddr *)&client, fromlen);
 
 }
 
-socket s1;
-
+socketObj s1;
 int main(int argc, const char * argv[]) {
 
     
