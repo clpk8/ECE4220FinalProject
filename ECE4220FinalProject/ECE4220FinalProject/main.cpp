@@ -46,11 +46,8 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
-
-using namespace std;
-
-class RTU{
-private:
+struct LogData
+{
     time_t rawtime;
     struct tm * timeinfo;
     int RTUid;
@@ -61,6 +58,14 @@ private:
     bool B2;
     unsigned short Voltage;
     string typeEvent;
+};
+
+
+using namespace std;
+
+class RTU{
+private:
+    LogData RTULogData;
 public:
     int count[4] = {0,0,0,0};
     RTU();
@@ -74,41 +79,40 @@ public:
 
 };
 void RTU::clearTypeEvent(){
-    typeEvent = "Regular 1 second log";
+    RTULogData.typeEvent = "Regular 1 second log";
 }
 void RTU::print(){
-    cout << "RTU id is: " << RTUid << endl;
-    cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
+    cout << "Status for S1,S2,B1,B2:" << RTULogData.S1 << " " << RTULogData.S2 << " " << RTULogData.B1 << " " << RTULogData.B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
-
-    cout << "Voltage value is: " << Voltage << endl;
-    cout << "The event happened is " << typeEvent << endl;
+    
+    cout << "Voltage value is: " << RTULogData.Voltage << endl;
+    cout << "The event happened is " << RTULogData.typeEvent << endl;
 }
 void RTU::setTime(){
-    time (&rawtime);
-    timeinfo = localtime (&rawtime);
+    time (&RTULogData.rawtime);
+    RTULogData.timeinfo = localtime (&RTULogData.rawtime);
     const int TIME_STRING_LENGTH = 20;
     char buffer [TIME_STRING_LENGTH];
-    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", timeinfo);
-    cout << "Current local time and date: " << asctime(timeinfo) << endl;
+    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
+    cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
     cout << buffer << endl;
 }
 void RTU::setRTUid(int id){
-    RTUid = id;
+    RTULogData.RTUid = id;
 }
 void RTU::setStatus(int choice, bool change){
     switch (choice) {
         case 1:
-            B1 = change;
+            RTULogData.B1 = change;
             break;
         case 2:
-            B2 = change;
+            RTULogData.B2 = change;
             break;
         case 3:
-            S1 = change;
+            RTULogData.S1 = change;
             break;
         case 4:
-            S2 = change;
+            RTULogData.S2 = change;
             break;
         default:
             cout << "set status failed" << endl;
@@ -116,10 +120,10 @@ void RTU::setStatus(int choice, bool change){
     }
 }
 void RTU::setVoltage(unsigned short V){
-    Voltage = V;
+    RTULogData.Voltage = V;
 }
 void RTU::setTypeEvent(string str){
-    typeEvent = str;
+    RTULogData.typeEvent = str;
 }
 RTU::RTU(){
     cout << "Globel RTU initilize"<<endl;
