@@ -472,9 +472,9 @@ void socketObj::setupSocket(){
     {
         cerr<<"setup Socket Error"<<endl;
     }
-    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
-    if(n < 0)
-        cerr << "receive error " << endl;
+//    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
+//    if(n < 0)
+//        cerr << "receive error " << endl;
     
     //get the length
     fromlen = sizeof(struct sockaddr_in);    // size of structure
