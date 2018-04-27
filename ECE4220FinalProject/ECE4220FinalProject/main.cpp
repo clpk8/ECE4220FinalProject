@@ -48,6 +48,7 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 
 struct LogData
 {
+    char timeBuffer [20];
     time_t rawtime;
     struct tm * timeinfo;
     int RTUid;
@@ -67,6 +68,7 @@ class RTU{
 private:
     LogData RTULogData;
 public:
+    LogData getRTUData();
     int count[4] = {0,0,0,0};
     RTU();
     void setTime();
@@ -78,24 +80,27 @@ public:
     void clearTypeEvent();
 
 };
+LogData RTU::getRTUData(){
+    return RTULogData;
+}
 void RTU::clearTypeEvent(){
     RTULogData.typeEvent = "Regular 1 second log";
 }
 void RTU::print(){
+    
     cout << "Status for S1,S2,B1,B2:" << RTULogData.S1 << " " << RTULogData.S2 << " " << RTULogData.B1 << " " << RTULogData.B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
     
     cout << "Voltage value is: " << RTULogData.Voltage << endl;
     cout << "The event happened is " << RTULogData.typeEvent << endl;
+    cout << "Time stamp : " << RTULogData.timeBuffer << endl;
 }
 void RTU::setTime(){
     time (&RTULogData.rawtime);
     RTULogData.timeinfo = localtime (&RTULogData.rawtime);
-    const int TIME_STRING_LENGTH = 20;
-    char buffer [TIME_STRING_LENGTH];
-    strftime(buffer, TIME_STRING_LENGTH, "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
-    cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
-    cout << buffer << endl;
+    strftime(RTULogData.timeBuffer, sizeof(RTULogData.timeBuffer), "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
+   // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
+  //  cout << buffer << endl;
 }
 void RTU::setRTUid(int id){
     RTULogData.RTUid = id;
@@ -486,7 +491,7 @@ void socketObj::setupSocket(){
 
 void socketObj::send(){
     
-    n = sendto(sock, "Got your message\n", 17, 0, (struct sockaddr *)&client, fromlen);
+    n = sendto(sock, (void*)(r1.getRTUData()), sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
 
 }
 
