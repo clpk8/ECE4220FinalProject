@@ -508,83 +508,7 @@ int main(int argc, const char * argv[]) {
         cout << "Please enter port number" << endl;
         return -1;
     }
-
-//    int sock, length, n;
-//    int boolval = 1; //use for socket option, to allow broadcast
-//    struct sockaddr_in server, broadcast, clint; //define structures
-//    char buf[MSG_SIZE]; //define buf
-//    socklen_t fromlen;
     
-//    struct ifreq ifr;
-//    char ip_address[13];
-//    const char s[2] = " ";
-//    const char c[2] = ".";
-//    //get IP
-//    /*AF_INET - to define IPv4 Address type.*/
-//    ifr.ifr_addr.sa_family = AF_INET;
-//    /*wlan0 - define the ifr_name - port name
-//     where network attached.*/
-//    memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
-
-//    //set up the socket
-//    sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
-//    if (sock < 0){
-//        cerr<<"create socker error"<<endl;
-//        return -1;
-//
-//    }
-//
-//    length = sizeof(broadcast);            // length of structure
-//    bzero(&broadcast,length);            // sets all values to zero. memset() could be used
-//
-//    length = sizeof(server);            // length of structure
-//    bzero(&server,length);            // sets all values to zero. memset() could be used
-//
-//    //initilize the server
-//    server.sin_family = AF_INET;        // symbol constant for Internet domain
-//    server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
-//    // the server is running
-//    server.sin_port = htons(atoi(argv[1]));    // port number
-
-    /*Accessing network interface information by
-     passing address using ioctl.*/
-//    ioctl(sock, SIOCGIFADDR, &ifr);
-//
-//    strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-
-//    //parsing to get machine number
-//    cout << "System IP Address is : "<< ip_address << endl;
-//    char temp[13];
-//    strcpy(temp, ip_address);
-//    char* token = strtok(temp,c);
-//    while(token != NULL){
-//        strcpy(temp, token);
-//        token = strtok(NULL,c);
-//    }
-//    token = strtok(temp, s);
-//    int myMachine = atoi(token);
-
-//    // binds the socket to the address of the host and the port number
-//    if (bind(sock, (struct sockaddr *)&server, length) < 0){
-//        cerr<<"bind Error"<<endl;
-//        return -1;
-//    }
-//
-//    // change socket permissions to allow broadcast
-//    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
-//    {
-//        cerr<<"setup Socket Error"<<endl;
-//        return -1;
-//    }
-//
-//    //set up broadcast
-//    broadcast.sin_addr.s_addr = inet_addr("128.206.19.255");
-//    broadcast.sin_family = AF_INET;
-//    broadcast.sin_port = htons(atoi(argv[1]));    // port number
-//
-//    //get the length
-//    fromlen = sizeof(struct sockaddr_in);    // size of structure
-
     r1.setRTUid(s1.getRTUID());
     cout<<"RUT id is "<< s1.getRTUID();
 
@@ -592,7 +516,7 @@ int main(int argc, const char * argv[]) {
     pthread_t adcReading;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     while ( 1 ) {
-       // r1.print();
+        r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
