@@ -394,21 +394,55 @@ void *readingADC(void* ptr){
 
 class socketObj{
 private:
+    struct ifreq ifr;//for getting ip
+    char ip_address[13];
+    const char s[2] = " ";
+    const char c[2] = ".";
     int sock;
     int length;
     int n;
     int port;
     RTU r1;
+    int myMachine;
     struct sockaddr_in server;
     struct sockaddr_in client;
 
     char buf[50];//test
     socklen_t fromlen;
 public:
+    int getRTUID();
     void getPort(int num);
     void setupSocket();
     void send();
+    void getIP();
 };
+int socketObj::getRTUID(){
+    return myMachine;
+}
+void socketObj::getIP(){
+    //get IP
+    /*AF_INET - to define IPv4 Address type.*/
+    ifr.ifr_addr.sa_family = AF_INET;
+    /*wlan0 - define the ifr_name - port name
+     where network attached.*/
+    memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
+    
+    ioctl(sock, SIOCGIFADDR, &ifr);
+    
+    strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+    
+    //parsing to get machine number
+    cout << "System IP Address is : "<< ip_address << endl;
+    char temp[13];
+    strcpy(temp, ip_address);
+    char* token = strtok(temp,c);
+    while(token != NULL){
+        strcpy(temp, token);
+        token = strtok(NULL,c);
+    }
+    token = strtok(temp, s);
+    myMachine = atoi(token);
+}
 void socketObj::getPort(int num){
     port = num;
 }
@@ -458,6 +492,7 @@ int main(int argc, const char * argv[]) {
     
     s1.getPort(atoi(argv[1]));
     s1.setupSocket();
+    s1.getIP();
     //RTU r1;
     if(setupWiringPiFunction() < 0 ){
         cerr << "Error setup RUT" << endl;
@@ -480,16 +515,16 @@ int main(int argc, const char * argv[]) {
 //    char buf[MSG_SIZE]; //define buf
 //    socklen_t fromlen;
     
-    struct ifreq ifr;
-    char ip_address[13];
-    const char s[2] = " ";
-    const char c[2] = ".";
-    //get IP
-    /*AF_INET - to define IPv4 Address type.*/
-    ifr.ifr_addr.sa_family = AF_INET;
-    /*wlan0 - define the ifr_name - port name
-     where network attached.*/
-    memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
+//    struct ifreq ifr;
+//    char ip_address[13];
+//    const char s[2] = " ";
+//    const char c[2] = ".";
+//    //get IP
+//    /*AF_INET - to define IPv4 Address type.*/
+//    ifr.ifr_addr.sa_family = AF_INET;
+//    /*wlan0 - define the ifr_name - port name
+//     where network attached.*/
+//    memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
 
 //    //set up the socket
 //    sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
@@ -513,21 +548,21 @@ int main(int argc, const char * argv[]) {
 
     /*Accessing network interface information by
      passing address using ioctl.*/
-    ioctl(sock, SIOCGIFADDR, &ifr);
+//    ioctl(sock, SIOCGIFADDR, &ifr);
+//
+//    strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
 
-    strcpy(ip_address,inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-
-    //parsing to get machine number
-    cout << "System IP Address is : "<< ip_address << endl;
-    char temp[13];
-    strcpy(temp, ip_address);
-    char* token = strtok(temp,c);
-    while(token != NULL){
-        strcpy(temp, token);
-        token = strtok(NULL,c);
-    }
-    token = strtok(temp, s);
-    int myMachine = atoi(token);
+//    //parsing to get machine number
+//    cout << "System IP Address is : "<< ip_address << endl;
+//    char temp[13];
+//    strcpy(temp, ip_address);
+//    char* token = strtok(temp,c);
+//    while(token != NULL){
+//        strcpy(temp, token);
+//        token = strtok(NULL,c);
+//    }
+//    token = strtok(temp, s);
+//    int myMachine = atoi(token);
 
 //    // binds the socket to the address of the host and the port number
 //    if (bind(sock, (struct sockaddr *)&server, length) < 0){
@@ -550,7 +585,7 @@ int main(int argc, const char * argv[]) {
 //    //get the length
 //    fromlen = sizeof(struct sockaddr_in);    // size of structure
 
-    r1.setRTUid(myMachine);
+    r1.setRTUid(s1.getRTUID());
     cout<<"RUT id is "<<myMachine<<endl;
 
     //create thread
