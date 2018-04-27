@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <wiringPi.h>
+#include <wiringPiSPI.h>
 #include <time.h>       /* time_t, struct tm, time, localtime */
 #include <unistd.h>
 #include <string.h>
@@ -21,6 +22,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>     /* atoi */
 #include <chrono>
+#include <pthread.h>
 
 
 using namespace std;
@@ -37,6 +39,11 @@ int portNum;
 //----------------Time used for rebounce ------------------
 struct timeval interruptTimeB1, lastInterruptTimeB1;
 struct timeval interruptTimeB2, lastInterruptTimeB2;
+
+//---------------------------ADC----------------------------
+#define SPI_CHANNEL         0// 0 or 1
+#define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
+#define ADC_CHANNEL       3    // Between 0 and 3
 
 using namespace std;
 class RTU{
@@ -273,6 +280,93 @@ int setupWiringPiFunction() {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
     }
+}
+
+uint16_t get_ADC(int ADC_chan)
+{
+    uint8_t spiData[3];
+    spiData[0] = 0b00000001; // Contains the Start Bit
+    spiData[1] = 0b10000000 | (ADC_chan << 4);    // Mode and Channel: M0XX0000
+    // M = 1 ==> single ended
+    // XX: channel selection: 00, 01, 10 or 11
+    spiData[2] = 0;    // "Don't care", this value doesn't matter.
+    
+    // The next function performs a simultaneous write/read transaction over the selected
+    // SPI bus. Data that was in the spiData buffer is overwritten by data returned from
+    // the SPI bus.
+    wiringPiSPIDataRW(SPI_CHANNEL, spiData, 3);
+    
+    // spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
+    
+    return ((spiData[1] << 8) | spiData[2]);
+}
+
+void readingADC(void* ptr){
+    uint16_t ADCvalue;
+    
+    // Configure the SPI
+    if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
+        cout << "wiringPiSPISetup failed" << endl;
+        //return -1 ;
+    }
+    
+    
+    struct sched_param param;
+    param.sched_priority = 51;
+    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
+    //check error
+    
+    if(check < 0){
+        cout << "Error assignning priority" << endl;
+    }
+    
+    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+    if(timer_fd < 0){
+        cout << "Create timer error" << endl;
+        //exit(-1);
+    }
+    //set timmer
+    struct itimerspec itval;
+    itval.it_interval.tv_sec = 0;
+    itval.it_interval.tv_nsec = 100000000;//period of 100 ms
+    
+    itval.it_value.tv_sec = 0;
+    itval.it_value.tv_nsec = 100;//start a little bit late first time
+    
+    timerfd_settime(timer_fd, 0, &itval, NULL);
+    
+    //read to get it sync
+    uint64_t num_periods = 0;
+    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+    if(check1 < 0){
+        printf("Readfile\n");
+    }
+    
+    if(num_periods > 1){
+        puts("MISSED WINDOW1\n");
+    }
+    
+
+    while(1){
+        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+        if(check1 < 0){
+            printf("Readfile\n");
+        }
+        
+        if(num_periods > 1){
+            puts("MISSED WINDOW2\n");
+        }
+        
+        ADCvalue = get_ADC(ADC_CHANNEL);
+        cout<< "ADC Value: " << ADCvalue << endl;
+        fprintf(fp,"%d\n",ADCvalue);
+        fflush(stdout);
+     //   r1.setTime();
+     //   r1.setVoltage(ADCvalue);
+     //   r1.setTypeEvent("ADC volatege")
+        //usleep(1000);
+    }
+    
 }
 int main(int argc, const char * argv[]) {
 
