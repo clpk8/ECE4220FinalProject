@@ -348,8 +348,8 @@ void readingADC(void* ptr){
         puts("MISSED WINDOW1\n");
     }
     
-    int adcUpperBound = 1200;
-    int adcLowerBound = 300;
+    int adcUpperBound = 350;
+    int adcLowerBound = 150;
 
     while(1){
         long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
@@ -392,7 +392,6 @@ int main(int argc, const char * argv[]) {
         cout << "Please enter port number" << endl;
         return -1;
     }
-
 
     int sock, length, n;
     int boolval = 1; //use for socket option, to allow broadcast
@@ -471,6 +470,9 @@ int main(int argc, const char * argv[]) {
 
     cout<<"RUT id is "<<myMachine<<endl;
 
+    //create thread
+    pthread_t adcReading;
+    pthread_create(&adcReading, NULL, void(*)readingADC, NULL);
     while ( 1 ) {
         r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
