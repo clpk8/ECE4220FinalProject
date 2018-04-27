@@ -292,36 +292,36 @@ uint16_t get_ADC(int ADC_chan)
     // M = 1 ==> single ended
     // XX: channel selection: 00, 01, 10 or 11
     spiData[2] = 0;    // "Don't care", this value doesn't matter.
-    
+
     // The next function performs a simultaneous write/read transaction over the selected
     // SPI bus. Data that was in the spiData buffer is overwritten by data returned from
     // the SPI bus.
     wiringPiSPIDataRW(SPI_CHANNEL, spiData, 3);
-    
+
     // spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
-    
+
     return ((spiData[1] << 8) | spiData[2]);
 }
 
 void readingADC(void* ptr){
     uint16_t ADCvalue;
-    
+
     // Configure the SPI
     if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
         cout << "wiringPiSPISetup failed" << endl;
         //return -1 ;
     }
-    
-    
+
+
     struct sched_param param;
     param.sched_priority = 51;
     int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
     //check error
-    
+
     if(check < 0){
         cout << "Error assignning priority" << endl;
     }
-    
+
     int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
     if(timer_fd < 0){
         cout << "Create timer error" << endl;
@@ -331,23 +331,23 @@ void readingADC(void* ptr){
     struct itimerspec itval;
     itval.it_interval.tv_sec = 0;
     itval.it_interval.tv_nsec = 100000000;//period of 100 ms
-    
+
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = 100;//start a little bit late first time
-    
+
     timerfd_settime(timer_fd, 0, &itval, NULL);
-    
+
     //read to get it sync
     uint64_t num_periods = 0;
     long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
     if(check1 < 0){
         printf("Readfile\n");
     }
-    
+
     if(num_periods > 1){
         puts("MISSED WINDOW1\n");
     }
-    
+
     int adcUpperBound = 350;
     int adcLowerBound = 150;
 
@@ -356,11 +356,11 @@ void readingADC(void* ptr){
         if(check1 < 0){
             printf("Readfile\n");
         }
-        
+
         if(num_periods > 1){
             puts("MISSED WINDOW2\n");
         }
-        
+
         ADCvalue = get_ADC(ADC_CHANNEL);
         cout<< "ADC Value: " << ADCvalue << endl;
       //  fprintf(fp,"%d\n",ADCvalue);
@@ -373,7 +373,7 @@ void readingADC(void* ptr){
 
         //usleep(1000);
     }
-    
+
 }
 int main(int argc, const char * argv[]) {
 
@@ -472,7 +472,7 @@ int main(int argc, const char * argv[]) {
 
     //create thread
     pthread_t adcReading;
-    pthread_create(&adcReading, NULL, void(*)readingADC, NULL);
+    pthread_create(&adcReading, NULL, (void*)readingADC, NULL);
     while ( 1 ) {
         r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
