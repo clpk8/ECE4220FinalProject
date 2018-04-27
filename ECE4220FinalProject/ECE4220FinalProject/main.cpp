@@ -46,6 +46,59 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
+//---------------------Setup server ------------------------
+
+int port;
+int sock, length, n;
+int boolval = 1; //use for socket option, to allow broadcast
+struct sockaddr_in server, broadcast, clint; //define structures
+char buf[MSG_SIZE]; //define buf
+socklen_t fromlen;
+//set up the socket
+sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
+if (sock < 0){
+    cerr<<"create socker error"<<endl;
+    return -1;
+    
+    }
+    length = sizeof(broadcast);            // length of structure
+    bzero(&broadcast,length);            // sets all values to zero. memset() could be used
+    
+    length = sizeof(server);            // length of structure
+    bzero(&server,length);            // sets all values to zero. memset() could be used
+    
+    //initilize the server
+    server.sin_family = AF_INET;        // symbol constant for Internet domain
+    server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
+    // the server is running
+    server.sin_port = htons(port);    // port number
+    
+    // binds the socket to the address of the host and the port number
+    if (bind(sock, (struct sockaddr *)&server, length) < 0){
+        cerr<<"bind Error"<<endl;
+        return -1;
+    }
+    // change socket permissions to allow broadcast
+    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
+    {
+        cerr<<"setup Socket Error"<<endl;
+        return -1;
+    }
+    
+    //set up broadcast
+    broadcast.sin_addr.s_addr = inet_addr("128.206.19.255");
+    broadcast.sin_family = AF_INET;
+    broadcast.sin_port = htons(port);    // port number
+    
+    //get the length
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
+    
+
+
+
+
+
+
 using namespace std;
 class RTU{
 private:
@@ -68,9 +121,14 @@ public:
     void setVoltage(unsigned short V);
     void setTypeEvent(string str);
     void print();
+    void clearTypeEvent();
 
 };
+void RTU::clearTypeEvent(){
+    typeEvent = "Regular 1 second log";
+}
 void RTU::print(){
+    cout << "RTU id is: " << RTUid << endl;
     cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
 
@@ -388,6 +446,7 @@ void *readingADC(void* ptr){
 }
 int main(int argc, const char * argv[]) {
 
+    port = atoi(argv[1]);
     //RTU r1;
     if(setupWiringPiFunction() < 0 ){
         cerr << "Error setup RUT" << endl;
@@ -404,11 +463,12 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
 
-    int sock, length, n;
-    int boolval = 1; //use for socket option, to allow broadcast
-    struct sockaddr_in server, broadcast, clint; //define structures
-    char buf[MSG_SIZE]; //define buf
-    socklen_t fromlen;
+//    int sock, length, n;
+//    int boolval = 1; //use for socket option, to allow broadcast
+//    struct sockaddr_in server, broadcast, clint; //define structures
+//    char buf[MSG_SIZE]; //define buf
+//    socklen_t fromlen;
+    
     struct ifreq ifr;
     char ip_address[13];
     const char s[2] = " ";
@@ -420,25 +480,25 @@ int main(int argc, const char * argv[]) {
      where network attached.*/
     memcpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
 
-    //set up the socket
-    sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
-    if (sock < 0){
-        cerr<<"create socker error"<<endl;
-        return -1;
-
-    }
-
-    length = sizeof(broadcast);            // length of structure
-    bzero(&broadcast,length);            // sets all values to zero. memset() could be used
-
-    length = sizeof(server);            // length of structure
-    bzero(&server,length);            // sets all values to zero. memset() could be used
-
-    //initilize the server
-    server.sin_family = AF_INET;        // symbol constant for Internet domain
-    server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
-    // the server is running
-    server.sin_port = htons(atoi(argv[1]));    // port number
+//    //set up the socket
+//    sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
+//    if (sock < 0){
+//        cerr<<"create socker error"<<endl;
+//        return -1;
+//
+//    }
+//
+//    length = sizeof(broadcast);            // length of structure
+//    bzero(&broadcast,length);            // sets all values to zero. memset() could be used
+//
+//    length = sizeof(server);            // length of structure
+//    bzero(&server,length);            // sets all values to zero. memset() could be used
+//
+//    //initilize the server
+//    server.sin_family = AF_INET;        // symbol constant for Internet domain
+//    server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
+//    // the server is running
+//    server.sin_port = htons(atoi(argv[1]));    // port number
 
     /*Accessing network interface information by
      passing address using ioctl.*/
@@ -458,27 +518,28 @@ int main(int argc, const char * argv[]) {
     token = strtok(temp, s);
     int myMachine = atoi(token);
 
-    // binds the socket to the address of the host and the port number
-    if (bind(sock, (struct sockaddr *)&server, length) < 0){
-        cerr<<"bind Error"<<endl;
-        return -1;
-    }
+//    // binds the socket to the address of the host and the port number
+//    if (bind(sock, (struct sockaddr *)&server, length) < 0){
+//        cerr<<"bind Error"<<endl;
+//        return -1;
+//    }
+//
+//    // change socket permissions to allow broadcast
+//    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
+//    {
+//        cerr<<"setup Socket Error"<<endl;
+//        return -1;
+//    }
+//
+//    //set up broadcast
+//    broadcast.sin_addr.s_addr = inet_addr("128.206.19.255");
+//    broadcast.sin_family = AF_INET;
+//    broadcast.sin_port = htons(atoi(argv[1]));    // port number
+//
+//    //get the length
+//    fromlen = sizeof(struct sockaddr_in);    // size of structure
 
-    // change socket permissions to allow broadcast
-    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
-    {
-        cerr<<"setup Socket Error"<<endl;
-        return -1;
-    }
-
-    //set up broadcast
-    broadcast.sin_addr.s_addr = inet_addr("128.206.19.255");
-    broadcast.sin_family = AF_INET;
-    broadcast.sin_port = htons(atoi(argv[1]));    // port number
-
-    //get the length
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
-
+    r1.setRTUid(myMachine);
     cout<<"RUT id is "<<myMachine<<endl;
 
     //create thread
