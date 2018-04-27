@@ -490,8 +490,8 @@ void socketObj::setupSocket(){
 }
 
 void socketObj::send(){
-    
-    n = sendto(sock, &(r1.getRTUData()), sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
+    LogData d1 = r1.getRTUData();
+    n = sendto(sock, &d1, sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
 
 }
 
