@@ -491,7 +491,7 @@ void socketObj::setupSocket(){
 
 void socketObj::send(){
     
-    n = sendto(sock, (void*)(r1.getRTUData()), sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
+    n = sendto(sock, &(r1.getRTUData()), sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
 
 }
 
