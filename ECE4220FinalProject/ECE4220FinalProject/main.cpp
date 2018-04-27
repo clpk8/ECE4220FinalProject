@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
+#include <sys/timerfd.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <net/if.h>
@@ -367,7 +368,7 @@ void readingADC(void* ptr){
         r1.setVoltage(ADCvalue);
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
                r1.setTime();
-               r1.setTypeEvent("ADC volatege")
+            r1.setTypeEvent("ADC volatege");
         }
 
         //usleep(1000);
