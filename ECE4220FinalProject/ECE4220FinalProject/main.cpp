@@ -140,6 +140,8 @@ void B1Interrupt() {
             r1.setStatus(1, false);
             r1.setTypeEvent("Button is turn off");
         }
+        r1.print();
+
         //printf ("Current local time and date: %s", asctime(timeinfo));
         //  cout << "Current local time and tate is : " << asctime(timeinfo);
         digitalWrite(LED1,LOW);
@@ -173,6 +175,8 @@ void B2Interrupt() {
             r1.setStatus(2, false);
             r1.setTypeEvent("Button 2 is turn off");
         }
+        r1.print();
+
         //printf ("Current local time and date: %s", asctime(timeinfo));
         //  cout << "Current local time and tate is : " << asctime(timeinfo);
         digitalWrite(LED1,LOW);
@@ -204,6 +208,8 @@ void S1Interrupt() {
         r1.setStatus(3, false);
         r1.setTypeEvent("Switch 1 is turn off");
     }
+    r1.print();
+
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -221,16 +227,20 @@ void S1Interrupt() {
 }
 void S2Interrupt() {
 
+
     r1.setTime();
     r1.count[3]++;
     if(r1.count[3] %2 == 1){
         r1.setStatus(4, true);
         r1.setTypeEvent("Switch 2 is turn on");
+        
     }
     else{
         r1.setStatus(4, false);
         r1.setTypeEvent("Switch 2 is turn off");
     }
+    r1.print();
+
     //printf ("Current local time and date: %s", asctime(timeinfo));
     //  cout << "Current local time and tate is : " << asctime(timeinfo);
     digitalWrite(LED1,LOW);
@@ -369,6 +379,7 @@ void *readingADC(void* ptr){
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
             r1.setTime();
             r1.setTypeEvent("ADC volatege out of bound");
+            r1.print();
         }
 
         //usleep(1000);
@@ -474,7 +485,7 @@ int main(int argc, const char * argv[]) {
     pthread_t adcReading;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     while ( 1 ) {
-        r1.print();
+       // r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
