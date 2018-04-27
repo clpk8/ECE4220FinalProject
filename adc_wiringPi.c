@@ -46,6 +46,7 @@ int main(void)
 	}
 
     int i = 0;
+    int max = 0, min =1000;
 	// Loop that constantly reads the converted value from the selected channel, and
 	// prints it to the screen.
 	// This is a simple test, with a sampling frequency of ~1 Hz. Remember that sleep()
@@ -54,10 +55,17 @@ int main(void)
 		ADCvalue = get_ADC(ADC_CHANNEL);
 		printf("ADC Value: %d\n", ADCvalue);
         fprintf(fp,"%d\n",ADCvalue);
+        if(ADCvalue > max)
+            max = ADCvalue;
+        
+        if(ADCvalue < min)
+            min = ADCvalue;
 		fflush(stdout);
 		usleep(1000);
         i++;
 	}
+    
+    printf("MAX is %d\nMin is %d\n",max,min);
 
     fclose(fp);
   return 0;

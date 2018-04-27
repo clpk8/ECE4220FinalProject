@@ -73,6 +73,7 @@ void RTU::print(){
     cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
 
+    cout << "Voltage value is: " << Voltage;
     cout << "The event happened is " << typeEvent << endl;
 }
 void RTU::setTime(){
@@ -346,6 +347,8 @@ void readingADC(void* ptr){
         puts("MISSED WINDOW1\n");
     }
     
+    int adcUpperBound = 1200;
+    int adcLowerBound = 300;
 
     while(1){
         long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
@@ -359,11 +362,14 @@ void readingADC(void* ptr){
         
         ADCvalue = get_ADC(ADC_CHANNEL);
         cout<< "ADC Value: " << ADCvalue << endl;
-        fprintf(fp,"%d\n",ADCvalue);
+      //  fprintf(fp,"%d\n",ADCvalue);
         fflush(stdout);
-     //   r1.setTime();
-     //   r1.setVoltage(ADCvalue);
-     //   r1.setTypeEvent("ADC volatege")
+        r1.setVoltage(ADCvalue);
+        if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
+               r1.setTime();
+               r1.setTypeEvent("ADC volatege")
+        }
+
         //usleep(1000);
     }
     
