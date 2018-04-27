@@ -456,7 +456,7 @@ socketObj s1;
 int main(int argc, const char * argv[]) {
 
     
-    s1.getPort(atoi(argc[1]));
+    s1.getPort(atoi(argv[1]));
     s1.setupSocket();
     //RTU r1;
     if(setupWiringPiFunction() < 0 ){
