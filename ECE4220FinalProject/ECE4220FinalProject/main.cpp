@@ -303,7 +303,7 @@ uint16_t get_ADC(int ADC_chan)
     return ((spiData[1] << 8) | spiData[2]);
 }
 
-void readingADC(void* ptr){
+void *readingADC(void* ptr){
     uint16_t ADCvalue;
 
     // Configure the SPI
@@ -472,7 +472,7 @@ int main(int argc, const char * argv[]) {
 
     //create thread
     pthread_t adcReading;
-    pthread_create(&adcReading, NULL, (void*)readingADC, NULL);
+    pthread_create(&adcReading, NULL, readingADC, NULL);
     while ( 1 ) {
         r1.print();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
