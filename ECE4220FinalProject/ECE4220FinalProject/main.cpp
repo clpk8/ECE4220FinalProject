@@ -74,7 +74,7 @@ void RTU::print(){
     cout << "Status for S1,S2,B1,B2:" << S1 << " " << S2 << " " << B1 << " " << B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
 
-    cout << "Voltage value is: " << Voltage;
+    cout << "Voltage value is: " << Voltage << endl;
     cout << "The event happened is " << typeEvent << endl;
 }
 void RTU::setTime(){
@@ -367,8 +367,8 @@ void *readingADC(void* ptr){
         fflush(stdout);
         r1.setVoltage(ADCvalue);
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
-               r1.setTime();
-            r1.setTypeEvent("ADC volatege");
+            r1.setTime();
+            r1.setTypeEvent("ADC volatege out of bound");
         }
 
         //usleep(1000);
