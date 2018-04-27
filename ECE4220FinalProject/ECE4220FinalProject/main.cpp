@@ -481,9 +481,9 @@ void socketObj::setupSocket(){
     {
         cerr<<"setup Socket Error"<<endl;
     }
-//    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
-//    if(n < 0)
-//        cerr << "receive error " << endl;
+    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
+    if(n < 0)
+        cerr << "receive error " << endl;
     
     //get the length
     fromlen = sizeof(struct sockaddr_in);    // size of structure
@@ -526,11 +526,12 @@ int main(int argc, const char * argv[]) {
     pthread_create(&adcReading, NULL, readingADC, NULL);
     while ( 1 ) {
         r1.print();
+        s1.send();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
-        delay( 1000 ); // wait 1 second
+        delay(10000);
     }
 
 
