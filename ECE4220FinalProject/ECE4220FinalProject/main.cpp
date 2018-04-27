@@ -586,7 +586,7 @@ int main(int argc, const char * argv[]) {
 //    fromlen = sizeof(struct sockaddr_in);    // size of structure
 
     r1.setRTUid(s1.getRTUID());
-    cout<<"RUT id is "<<myMachine<<endl;
+    cout<<"RUT id is "<< s1.getRTUID();
 
     //create thread
     pthread_t adcReading;
