@@ -107,6 +107,8 @@ void RTU::print(){
     cout << "Voltage value is: " << RTULogData.Voltage << endl;
     cout << "The event happened is " << RTULogData.typeEvent << endl;
     cout << "Time stamp : " << RTULogData.timeBuffer << endl;
+    cout << "my buffer is " << RTULogData.sendBuffer << endl;
+    cout << "GETTER " << getSendBuffer() << endl;
 }
 void RTU::setTime(){
     time (&RTULogData.rawtime);
@@ -470,7 +472,9 @@ void socketObj::setupSocket(){
 }
 
 void socketObj::send(){
-    n = sendto(sock,r1.getSendBuffer(), 100, 0, (struct sockaddr *)&client, fromlen);
+    string temp = r1.getSendBuffer();
+    char tempBuf[100] = temp.c_str();
+    n = sendto(sock,tempBuf, 100, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
     else
