@@ -471,7 +471,7 @@ void socketObj::setupSocket(){
 
 void socketObj::send(){
    // LogData d1 = r1.getRTUData();
-    char temp [100] = r1.concatBuffer();
+    char* temp = r1.concatBuffer();
     n = sendto(sock,temp, sizeof(temp), 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
