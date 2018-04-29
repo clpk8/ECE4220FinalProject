@@ -389,7 +389,7 @@ string socketObj::receiveFrom(){
     if(n < 0)
         cout << "Receive error " << endl;
     
-    cou << "buf is " << buf << endl;
+    cout << "buf is " << buf << endl;
     string str(buf);
     return str;
 }
@@ -466,7 +466,7 @@ void socketObj::send(){
 socketObj s1;
 
 void *turnLEDS(void* ptr){
-    cout << "Thread turnLEDS initilzied"
+    cout << "Thread turnLEDS initilzied" << endl;
     while(1){
         string command = s1.receiveFrom();
         cout << "Command is "<< command;
