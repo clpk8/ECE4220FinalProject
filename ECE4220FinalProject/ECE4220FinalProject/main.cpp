@@ -602,7 +602,7 @@ int main(int argc, const char * argv[]) {
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
-        delay(10000);
+       // delay(10000);
     }
     
     
