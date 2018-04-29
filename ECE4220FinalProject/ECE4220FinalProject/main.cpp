@@ -448,7 +448,6 @@ void socketObj::setupSocket(){
     // the server is running
     server.sin_port = htons(port);    // port number
 
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
 
     
     // binds the socket to the address of the host and the port number
@@ -460,9 +459,14 @@ void socketObj::setupSocket(){
     {
         cerr<<"setup Socket Error"<<endl;
     }
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
+
+    
     n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
     if(n < 0)
         cerr << "receive error " << endl;
+    
+
     
 
     //get the length
