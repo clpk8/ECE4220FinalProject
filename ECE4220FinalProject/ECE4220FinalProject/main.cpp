@@ -101,7 +101,6 @@ void RTU::print(){
     cout << "The event happened is " << RTULogData.typeEvent << endl;
     cout << "Time stamp : " << RTULogData.timeBuffer << endl;
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
-    cout << "GETTER " << getSendBuffer() << endl;
 }
 void RTU::setTime(){
     time (&RTULogData.rawtime);
@@ -350,7 +349,7 @@ void *readingADC(void* ptr){
         }
         
         ADCvalue = get_ADC(ADC_CHANNEL);
-        cout<< "ADC Value: " << ADCvalue << endl;
+    //    cout<< "ADC Value: " << ADCvalue << endl;
         //  fprintf(fp,"%d\n",ADCvalue);
         //  fflush(stdout);
         r1.setVoltage(ADCvalue);
@@ -473,16 +472,12 @@ void socketObj::setupSocket(){
 }
 
 void socketObj::send(RTU r1){
-   // r1.print();
     string temp = r1.getSendBuffer();
     char *tempBuf = (char*)temp.c_str();
     n = sendto(sock,tempBuf, 200, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
-    else
-        cout << "sended" << endl;
-    
-    cout << "my buffer is "<< r1.getSendBuffer() << endl;
+
 }
 
 socketObj s1;
@@ -551,7 +546,55 @@ int main(int argc, const char * argv[]) {
     pthread_t adcReading, receiveThread;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     pthread_create(&receiveThread, NULL, turnLEDS, NULL);
+    
+    // ------set up real task -------------
+    struct sched_param param;
+    param.sched_priority = 51;
+    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
+    //check error
+    
+    if(check < 0){
+        cout << "Error assignning priority" << endl;
+    }
+    
+    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+    if(timer_fd < 0){
+        cout << "Create timer error" << endl;
+        //exit(-1);
+    }
+    //set timmer
+    struct itimerspec itval;
+    itval.it_interval.tv_sec = 1;
+    itval.it_interval.tv_nsec = 0;//period of 100 ms
+    
+    itval.it_value.tv_sec = 0;
+    itval.it_value.tv_nsec = 100;//start a little bit late first time
+    
+    timerfd_settime(timer_fd, 0, &itval, NULL);
+    
+    //read to get it sync
+    uint64_t num_periods = 0;
+    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+    if(check1 < 0){
+        cout << "Readfile " << endl;
+    }
+    
+    if(num_periods > 1){
+        cout << "MISSED WINDLW " << endl;
+    }
+    
+    
     while ( 1 ) {
+        
+        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+        if(check1 < 0){
+            cout << "Readfile " << endl;
+        }
+        
+        if(num_periods > 1){
+            cout << "Readfile " << endl;
+        }
+        
         r1.print();
         r1.concatBuffer();
         s1.send(r1);
