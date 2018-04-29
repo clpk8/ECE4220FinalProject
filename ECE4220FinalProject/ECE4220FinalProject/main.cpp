@@ -372,7 +372,7 @@ void *readingADC(void* ptr){
 
 }
 
-class socketObj{
+class socketObj :: public RTU {
 private:
     struct ifreq ifr;//for getting ip
     char ip_address[13];
