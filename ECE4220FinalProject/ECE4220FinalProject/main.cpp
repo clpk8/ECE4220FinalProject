@@ -471,7 +471,7 @@ void *turnLEDS(void* ptr){
     while(1){
         string command = s1.receiveFrom();
         cout << "Command is "<< command;
-        string led1("LED1\0");
+        string led1("LED1\n");
         string led2("LED2\n");
         cout << "led string length is " << led1.length() << endl;
         cout << "led string length is " << led2.length() << endl;
