@@ -495,7 +495,7 @@ void *turnLEDS(void* ptr){
                 digitalWrite(LED1,HIGH);
                 LED1Flag = 1;
             }
-            else{
+            else if(LED1Flag == 1){
                 digitalWrite(LED1,LOW);
                 LED1Flag = 0;
             }
@@ -505,7 +505,7 @@ void *turnLEDS(void* ptr){
                 digitalWrite(LED2,HIGH);
                 LED2Flag = 1;
             }
-            else{
+            else if(LED2Flag == 1){
                 digitalWrite(LED2,LOW);
                 LED2Flag = 0;
             }
