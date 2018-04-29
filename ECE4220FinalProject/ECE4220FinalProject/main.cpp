@@ -69,9 +69,9 @@ using namespace std;
 
 class RTU{
 private:
+    LogData RTULogData;
 
 public:
-    LogData RTULogData;
     string getSendBuffer();
     int count[4] = {0,0,0,0};
     RTU();
@@ -373,7 +373,7 @@ void *readingADC(void* ptr){
 
 }
 
-class socketObj : public RTU{
+class socketObj{
 private:
    // RTU r1;
     struct ifreq ifr;//for getting ip
@@ -395,7 +395,7 @@ public:
     int getRTUID();
     void getPort(int num);
     void setupSocket();
-    void send();
+    void send(RTU r1);
     void getIP();
     string receiveFrom();
 };
@@ -473,7 +473,7 @@ void socketObj::setupSocket(){
     fromlen = sizeof(struct sockaddr_in);    // size of structure
 }
 
-void socketObj::send(){
+void socketObj::send(RTU r1){
     r1.print();
     string temp = r1.getSendBuffer();
     char *tempBuf = (char*)temp.c_str();
@@ -555,7 +555,7 @@ int main(int argc, const char * argv[]) {
     while ( 1 ) {
         r1.print();
         r1.concatBuffer();
-        s1.send();
+        s1.send(r1);
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
