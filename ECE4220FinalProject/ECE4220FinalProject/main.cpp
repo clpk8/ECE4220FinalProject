@@ -529,8 +529,8 @@ int main(int argc, const char * argv[]) {
     pthread_create(&adcReading, NULL, readingADC, NULL);
     pthread_create(&receiveThread, NULL, turnLEDS, NULL);
     while ( 1 ) {
-        r1.print();
-        s1.send();
+      //  r1.print();
+      //  s1.send();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
