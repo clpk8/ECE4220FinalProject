@@ -1,11 +1,3 @@
-//
-//  main.cpp
-//  ECE4220FinalProject
-//
-//  Created by linChunbin on 4/24/18.
-//  Copyright © 2018 linChunbin. All rights reserved.
-//
-
 #include <iostream>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
@@ -70,7 +62,7 @@ using namespace std;
 class RTU{
 private:
     LogData RTULogData;
-
+    
 public:
     string getSendBuffer();
     int count[4] = {0,0,0,0};
@@ -83,7 +75,7 @@ public:
     void print();
     void clearTypeEvent();
     void concatBuffer();
-
+    
 };
 void RTU::concatBuffer(){
     bzero(RTULogData.sendBuffer, 200);
@@ -115,8 +107,8 @@ void RTU::setTime(){
     time (&RTULogData.rawtime);
     RTULogData.timeinfo = localtime (&RTULogData.rawtime);
     strftime(RTULogData.timeBuffer, sizeof(RTULogData.timeBuffer), "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
-   // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
-  //  cout << buffer << endl;
+    // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
+    //  cout << buffer << endl;
 }
 void RTU::setRTUid(int id){
     RTULogData.RTUid = id;
@@ -171,14 +163,14 @@ void B1Interrupt() {
             r1.setTypeEvent("Button is turn off");
         }
         r1.print();
-
-
+        
+        
     }
     lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
-
+    
 }
 void B2Interrupt() {
-
+    
     gettimeofday(&interruptTimeB2, NULL);
     cout << "interrupt happened" << endl;
     if(((interruptTimeB2.tv_sec - lastInterruptTimeB2.tv_sec)*1000000 + (interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec) > 250000)){
@@ -193,15 +185,15 @@ void B2Interrupt() {
             r1.setTypeEvent("Button 2 is turn off");
         }
         r1.print();
-
-
+        
+        
     }
-
+    
     lastInterruptTimeB2.tv_usec = interruptTimeB2.tv_usec;
-
+    
 }
 void S1Interrupt() {
-
+    
     r1.setTime();
     r1.count[2]++;
     if(r1.count[2] %2 == 1){
@@ -213,11 +205,11 @@ void S1Interrupt() {
         r1.setTypeEvent("Switch 1 is turn off");
     }
     r1.print();
-
+    
 }
 void S2Interrupt() {
-
-
+    
+    
     r1.setTime();
     r1.count[3]++;
     if(r1.count[3] %2 == 1){
@@ -230,8 +222,8 @@ void S2Interrupt() {
         r1.setTypeEvent("Switch 2 is turn off");
     }
     r1.print();
-
-
+    
+    
 }
 
 
@@ -249,8 +241,8 @@ int setupWiringPiFunction() {
     pinMode(BTN2, INPUT);
     pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
-
-
+    
+    
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
@@ -287,37 +279,37 @@ uint16_t get_ADC(int ADC_chan)
     // M = 1 ==> single ended
     // XX: channel selection: 00, 01, 10 or 11
     spiData[2] = 0;    // "Don't care", this value doesn't matter.
-
+    
     // The next function performs a simultaneous write/read transaction over the selected
     // SPI bus. Data that was in the spiData buffer is overwritten by data returned from
     // the SPI bus.
     wiringPiSPIDataRW(SPI_CHANNEL, spiData, 3);
-
+    
     // spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
-
+    
     return ((spiData[1] << 8) | spiData[2]);
 }
 
 
 void *readingADC(void* ptr){
     uint16_t ADCvalue;
-
+    
     // Configure the SPI
     if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
         cout << "wiringPiSPISetup failed" << endl;
         //return -1 ;
     }
-
-
+    
+    
     struct sched_param param;
     param.sched_priority = 51;
     int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
     //check error
-
+    
     if(check < 0){
         cout << "Error assignning priority" << endl;
     }
-
+    
     int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
     if(timer_fd < 0){
         cout << "Create timer error" << endl;
@@ -327,55 +319,55 @@ void *readingADC(void* ptr){
     struct itimerspec itval;
     itval.it_interval.tv_sec = 0;
     itval.it_interval.tv_nsec = 100000000;//period of 100 ms
-
+    
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = 100;//start a little bit late first time
-
+    
     timerfd_settime(timer_fd, 0, &itval, NULL);
-
+    
     //read to get it sync
     uint64_t num_periods = 0;
     long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
     if(check1 < 0){
         cout << "Readfile " << endl;
     }
-
+    
     if(num_periods > 1){
         cout << "MISSED WINDLW " << endl;
     }
-
+    
     int adcUpperBound = 350;
     int adcLowerBound = 150;
-
+    
     while(1){
         long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
         if(check1 < 0){
             cout << "Readfile " << endl;
         }
-
+        
         if(num_periods > 1){
             cout << "Readfile " << endl;
         }
-
+        
         ADCvalue = get_ADC(ADC_CHANNEL);
         cout<< "ADC Value: " << ADCvalue << endl;
-      //  fprintf(fp,"%d\n",ADCvalue);
-      //  fflush(stdout);
+        //  fprintf(fp,"%d\n",ADCvalue);
+        //  fflush(stdout);
         r1.setVoltage(ADCvalue);
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
             r1.setTime();
             r1.setTypeEvent("ADC volatege out of bound");
-  //          r1.print();
+            //          r1.print();
         }
-
+        
         //usleep(1000);
     }
-
+    
 }
 
 class socketObj{
 private:
-   // RTU r1;
+    // RTU r1;
     struct ifreq ifr;//for getting ip
     char ip_address[13];
     const char s[2] = " ";
@@ -388,7 +380,7 @@ private:
     int myMachine;
     struct sockaddr_in server;
     struct sockaddr_in client;
-
+    
     char buf[7];//test
     socklen_t fromlen;
 public:
@@ -404,9 +396,9 @@ string socketObj::receiveFrom(){
     if(n < 0)
         cout << "Receive error " << endl;
     
-   // cout << "buf is " << buf << endl;
+    // cout << "buf is " << buf << endl;
     string str(buf);
-   // cout << "Length of string is " << str.length() << endl;
+    // cout << "Length of string is " << str.length() << endl;
     return str;
 }
 int socketObj::getRTUID(){
@@ -456,8 +448,6 @@ void socketObj::setupSocket(){
     // the server is running
     server.sin_port = htons(port);    // port number
     
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
-
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
@@ -471,8 +461,8 @@ void socketObj::setupSocket(){
     if(n < 0)
         cerr << "receive error " << endl;
     
-    cout << "received is " << buf << endl;
     //get the length
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
 }
 
 void socketObj::send(RTU r1){
@@ -494,10 +484,10 @@ void *turnLEDS(void* ptr){
     cout << "Thread turnLEDS initilzied" << endl;
     while(1){
         string command = s1.receiveFrom();
-     //   cout << "Command is "<< command;
+        //   cout << "Command is "<< command;
         string led1("LED1\n");
         string led2("LED2\n");
-
+        
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
                 digitalWrite(LED1,HIGH);
@@ -521,12 +511,12 @@ void *turnLEDS(void* ptr){
         else
             cout << "Command received is "<< command << endl;
     }
- 
+    
 }
 
 
 int main(int argc, const char * argv[]) {
-
+    
     
     s1.getPort(atoi(argv[1]));
     s1.setupSocket();
@@ -536,73 +526,25 @@ int main(int argc, const char * argv[]) {
         cerr << "Error setup RUT" << endl;
         return -1;
     }
-
+    
     gettimeofday(&lastInterruptTimeB1, NULL);
     gettimeofday(&lastInterruptTimeB2, NULL);
-
+    
     //makesure port number is provided
     if(argc < 2){
-
+        
         cout << "Please enter port number" << endl;
         return -1;
     }
     
     r1.setRTUid(s1.getRTUID());
     cout<<"RUT id is "<< s1.getRTUID();
-
+    
     //create thread
     pthread_t adcReading, receiveThread;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     pthread_create(&receiveThread, NULL, turnLEDS, NULL);
-    
-    //set it as softreal time
-    struct sched_param param;
-    param.sched_priority = 51;
-    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
-    //check error
-    
-    if(check < 0){
-        cout << "Error assignning priority" << endl;
-    }
-    
-    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
-    if(timer_fd < 0){
-        cout << "Create timer error" << endl;
-        //exit(-1);
-    }
-    //set timmer
-    struct itimerspec itval;
-    itval.it_interval.tv_sec = 1;
-    itval.it_interval.tv_nsec = 0;//period of 100 ms
-    
-    itval.it_value.tv_sec = 0;
-    itval.it_value.tv_nsec = 100;//start a little bit late first time
-    
-    timerfd_settime(timer_fd, 0, &itval, NULL);
-    
-    //read to get it sync
-    uint64_t num_periods = 0;
-    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
-    if(check1 < 0){
-        cout << "Readfile " << endl;
-    }
-    
-    if(num_periods > 1){
-        cout << "MISSED WINDLW " << endl;
-    }
-
-    
     while ( 1 ) {
-        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
-        if(check1 < 0){
-            cout << "Readfile " << endl;
-        }
-        
-        if(num_periods > 1){
-            cout << "MISSED WINDLW " << endl;
-        }
-
-        
         r1.print();
         r1.concatBuffer();
         s1.send(r1);
@@ -610,9 +552,10 @@ int main(int argc, const char * argv[]) {
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
+        delay(10000);
     }
-
-
-
+    
+    
+    
     return 0;
 }
