@@ -351,7 +351,7 @@ void *readingADC(void* ptr){
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
             r1.setTime();
             r1.setTypeEvent("ADC volatege out of bound");
-            r1.print();
+  //          r1.print();
         }
 
         //usleep(1000);
@@ -389,9 +389,9 @@ string socketObj::receiveFrom(){
     if(n < 0)
         cout << "Receive error " << endl;
     
-    cout << "buf is " << buf << endl;
+   // cout << "buf is " << buf << endl;
     string str(buf);
-    cout << "Length of string is " << str.length() << endl;
+   // cout << "Length of string is " << str.length() << endl;
     return str;
 }
 int socketObj::getRTUID(){
@@ -461,7 +461,10 @@ void socketObj::setupSocket(){
 void socketObj::send(){
     LogData d1 = r1.getRTUData();
     n = sendto(sock, &d1, sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
-
+    if(n < 0 )
+        cout << "send error" << endl;
+    else
+        cout << "sended" << endl;
 }
 
 socketObj s1;
@@ -470,11 +473,9 @@ void *turnLEDS(void* ptr){
     cout << "Thread turnLEDS initilzied" << endl;
     while(1){
         string command = s1.receiveFrom();
-        cout << "Command is "<< command;
+     //   cout << "Command is "<< command;
         string led1("LED1\n");
         string led2("LED2\n");
-        cout << "led string length is " << led1.length() << endl;
-        cout << "led string length is " << led2.length() << endl;
 
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
@@ -539,7 +540,7 @@ int main(int argc, const char * argv[]) {
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
-        delay(100000);
+        delay(10000);
     }
 
 
