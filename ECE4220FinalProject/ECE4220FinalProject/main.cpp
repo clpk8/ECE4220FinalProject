@@ -465,31 +465,35 @@ void socketObj::send(){
 socketObj s1;
 
 void *turnLEDS(void* ptr){
-    string command = s1.receiveFrom();
-    string led1("LED1");
-    string led2("LED2");
-    if(command.compare(led1) == 0 ){
-        if(LED1Flag == 0){
-            digitalWrite(LED1,HIGH);
-            LED1Flag = 1;
+    cout << "Thread turnLEDS initilzied"
+    while(1){
+        string command = s1.receiveFrom();
+        string led1("LED1");
+        string led2("LED2");
+        if(command.compare(led1) == 0 ){
+            if(LED1Flag == 0){
+                digitalWrite(LED1,HIGH);
+                LED1Flag = 1;
+            }
+            else{
+                digitalWrite(LED1,LOW);
+                LED1Flag = 0;
+            }
         }
-        else{
-            digitalWrite(LED1,LOW);
-            LED1Flag = 0;
+        else if(command.compare(led2) == 0){
+            if(LED1Flag == 0){
+                digitalWrite(LED2,HIGH);
+                LED1Flag = 1;
+            }
+            else{
+                digitalWrite(LED2,LOW);
+                LED2Flag = 0;
+            }
         }
+        else
+            cout << "Command received is "<< command << endl;
     }
-    else if(command.compare(led2) == 0){
-        if(LED1Flag == 0){
-            digitalWrite(LED2,HIGH);
-            LED1Flag = 1;
-        }
-        else{
-            digitalWrite(LED2,LOW);
-            LED2Flag = 0;
-        }
-    }
-    else
-        cout << "Command received is "<< command << endl;
+ 
 }
 
 
