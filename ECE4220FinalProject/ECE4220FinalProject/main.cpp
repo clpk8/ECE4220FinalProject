@@ -323,11 +323,11 @@ void *readingADC(void* ptr){
     uint64_t num_periods = 0;
     long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
     if(check1 < 0){
-        printf("Readfile\n");
+        cout << "Readfile " << endl;
     }
 
     if(num_periods > 1){
-        puts("MISSED WINDOW1\n");
+        cout << "MISSED WINDLW " << endl;
     }
 
     int adcUpperBound = 350;
@@ -336,17 +336,17 @@ void *readingADC(void* ptr){
     while(1){
         long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
         if(check1 < 0){
-            printf("Readfile\n");
+            cout << "Readfile " << endl;
         }
 
         if(num_periods > 1){
-            puts("MISSED WINDOW2\n");
+            cout << "Readfile " << endl;
         }
 
         ADCvalue = get_ADC(ADC_CHANNEL);
         cout<< "ADC Value: " << ADCvalue << endl;
       //  fprintf(fp,"%d\n",ADCvalue);
-        fflush(stdout);
+      //  fflush(stdout);
         r1.setVoltage(ADCvalue);
         if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
             r1.setTime();
@@ -519,9 +519,9 @@ int main(int argc, const char * argv[]) {
     cout<<"RUT id is "<< s1.getRTUID();
 
     //create thread
-    pthread_t adcReading, turnLEDs;
+    pthread_t adcReading, receiveThread;
     pthread_create(&adcReading, NULL, readingADC, NULL);
-    pthread_create(&turnLeds, NULL, turnLEDS, NULL);
+    pthread_create(&receiveThread, NULL, turnLEDS, NULL);
     while ( 1 ) {
         r1.print();
         s1.send();
