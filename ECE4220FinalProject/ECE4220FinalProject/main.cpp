@@ -69,8 +69,9 @@ using namespace std;
 
 class RTU{
 private:
-    LogData RTULogData;
+
 public:
+    LogData RTULogData;
     string getSendBuffer();
     int count[4] = {0,0,0,0};
     RTU();
@@ -372,8 +373,9 @@ void *readingADC(void* ptr){
 
 }
 
-class socketObj :: public RTU {
+class socketObj : public RTU{
 private:
+   // RTU r1;
     struct ifreq ifr;//for getting ip
     char ip_address[13];
     const char s[2] = " ";
