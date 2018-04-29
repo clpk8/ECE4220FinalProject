@@ -448,6 +448,9 @@ void socketObj::setupSocket(){
     // the server is running
     server.sin_port = htons(port);    // port number
 
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
+
+    
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
@@ -461,7 +464,6 @@ void socketObj::setupSocket(){
     if(n < 0)
         cerr << "receive error " << endl;
     
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
 
     //get the length
 }
