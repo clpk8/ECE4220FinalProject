@@ -71,7 +71,7 @@ class RTU{
 private:
     LogData RTULogData;
 public:
-    char* getSendBuffer();
+    string getSendBuffer();
     int count[4] = {0,0,0,0};
     RTU();
     void setTime();
@@ -92,8 +92,9 @@ void RTU::concatBuffer(){
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
     
 }
-char * RTU::getSendBuffer(){
-    return RTULogData.sendBuffer;
+string RTU::getSendBuffer(){
+    string str(RTULogData.sendBuffer);
+    return str;
 }
 void RTU::clearTypeEvent(){
     RTULogData.typeEvent = "Regular 1 second log";
