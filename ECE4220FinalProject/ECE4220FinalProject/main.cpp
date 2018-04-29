@@ -61,6 +61,7 @@ struct LogData
     bool B2;
     unsigned short Voltage;
     string typeEvent;
+    char sendBuffer[100];
 };
 
 
@@ -80,8 +81,17 @@ public:
     void setTypeEvent(string str);
     void print();
     void clearTypeEvent();
+    char* concatBuffer();
 
 };
+char* RTU::concatBuffer(){
+    bzero(RTULogData.sendBuffer, 100);
+    char token = '|';
+    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%s%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent.c_str(),token);
+    
+    cout << "send buffer is " << RTULogData.sendBuffer << endl;
+    
+}
 LogData RTU::getRTUData(){
     return RTULogData;
 }
@@ -536,6 +546,7 @@ int main(int argc, const char * argv[]) {
     while ( 1 ) {
         r1.print();
         s1.send();
+        r1.concatBuffer();
         pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
