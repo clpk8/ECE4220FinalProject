@@ -61,7 +61,7 @@ struct LogData
     bool B2;
     unsigned short Voltage;
     string typeEvent;
-    char sendBuffer[100];
+    char sendBuffer[200];
 };
 
 
@@ -86,7 +86,7 @@ public:
 
 };
 void RTU::concatBuffer(){
-    bzero(RTULogData.sendBuffer, 100);
+    bzero(RTULogData.sendBuffer, 200);
     char token = '|';
     sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%s%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent.c_str(),token);
     
@@ -477,7 +477,7 @@ void socketObj::send(RTU r1){
     r1.print();
     string temp = r1.getSendBuffer();
     char *tempBuf = (char*)temp.c_str();
-    n = sendto(sock,tempBuf, 100, 0, (struct sockaddr *)&client, fromlen);
+    n = sendto(sock,tempBuf, 200, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
     else
