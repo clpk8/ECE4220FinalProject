@@ -456,6 +456,8 @@ void socketObj::setupSocket(){
     // the server is running
     server.sin_port = htons(port);    // port number
     
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
+
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
@@ -469,8 +471,8 @@ void socketObj::setupSocket(){
     if(n < 0)
         cerr << "receive error " << endl;
     
+    cout << "received is " << buf << endl;
     //get the length
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
 }
 
 void socketObj::send(RTU r1){
@@ -552,7 +554,55 @@ int main(int argc, const char * argv[]) {
     pthread_t adcReading, receiveThread;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     pthread_create(&receiveThread, NULL, turnLEDS, NULL);
+    
+    //set it as softreal time
+    struct sched_param param;
+    param.sched_priority = 51;
+    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
+    //check error
+    
+    if(check < 0){
+        cout << "Error assignning priority" << endl;
+    }
+    
+    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+    if(timer_fd < 0){
+        cout << "Create timer error" << endl;
+        //exit(-1);
+    }
+    //set timmer
+    struct itimerspec itval;
+    itval.it_interval.tv_sec = 1;
+    itval.it_interval.tv_nsec = 0;//period of 100 ms
+    
+    itval.it_value.tv_sec = 0;
+    itval.it_value.tv_nsec = 100;//start a little bit late first time
+    
+    timerfd_settime(timer_fd, 0, &itval, NULL);
+    
+    //read to get it sync
+    uint64_t num_periods = 0;
+    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+    if(check1 < 0){
+        cout << "Readfile " << endl;
+    }
+    
+    if(num_periods > 1){
+        cout << "MISSED WINDLW " << endl;
+    }
+
+    
     while ( 1 ) {
+        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+        if(check1 < 0){
+            cout << "Readfile " << endl;
+        }
+        
+        if(num_periods > 1){
+            cout << "MISSED WINDLW " << endl;
+        }
+
+        
         r1.print();
         r1.concatBuffer();
         s1.send(r1);
@@ -560,7 +610,6 @@ int main(int argc, const char * argv[]) {
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
-        delay(10000);
     }
 
 
