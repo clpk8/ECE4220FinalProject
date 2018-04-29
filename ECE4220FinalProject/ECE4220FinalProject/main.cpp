@@ -37,6 +37,8 @@ using namespace std;
 #define SW2   23
 #define MSG_SIZE 40            // message size
 int portNum;
+int LED1Flag;
+int LED2Flag;
 //----------------Time used for rebounce ------------------
 struct timeval interruptTimeB1, lastInterruptTimeB1;
 struct timeval interruptTimeB2, lastInterruptTimeB2;
@@ -156,20 +158,7 @@ void B1Interrupt() {
         }
         r1.print();
 
-        //printf ("Current local time and date: %s", asctime(timeinfo));
-        //  cout << "Current local time and tate is : " << asctime(timeinfo);
-        digitalWrite(LED1,LOW);
-        digitalWrite(LED2,LOW);
-        digitalWrite(LED3,LOW);
-        digitalWrite(LED4,LOW);
 
-        delay(500);
-
-        digitalWrite(LED1,HIGH);
-        digitalWrite(LED2,HIGH);
-        digitalWrite(LED3,HIGH);
-
-        delay(500);
     }
     lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
 
@@ -191,20 +180,7 @@ void B2Interrupt() {
         }
         r1.print();
 
-        //printf ("Current local time and date: %s", asctime(timeinfo));
-        //  cout << "Current local time and tate is : " << asctime(timeinfo);
-        digitalWrite(LED1,LOW);
-        digitalWrite(LED2,LOW);
-        digitalWrite(LED3,LOW);
-        digitalWrite(LED4,LOW);
 
-        delay(500);
-
-        digitalWrite(LED1,HIGH);
-        digitalWrite(LED2,HIGH);
-        digitalWrite(LED3,HIGH);
-
-        delay(500);
     }
 
     lastInterruptTimeB2.tv_usec = interruptTimeB2.tv_usec;
@@ -224,20 +200,6 @@ void S1Interrupt() {
     }
     r1.print();
 
-    //printf ("Current local time and date: %s", asctime(timeinfo));
-    //  cout << "Current local time and tate is : " << asctime(timeinfo);
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
-    digitalWrite(LED3,LOW);
-    digitalWrite(LED4,LOW);
-
-    delay(500);
-
-    digitalWrite(LED1,HIGH);
-    digitalWrite(LED2,HIGH);
-    digitalWrite(LED3,HIGH);
-
-    delay(500);
 }
 void S2Interrupt() {
 
@@ -255,20 +217,7 @@ void S2Interrupt() {
     }
     r1.print();
 
-    //printf ("Current local time and date: %s", asctime(timeinfo));
-    //  cout << "Current local time and tate is : " << asctime(timeinfo);
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
-    digitalWrite(LED3,LOW);
-    digitalWrite(LED4,LOW);
 
-    delay(500);
-
-    digitalWrite(LED1,HIGH);
-    digitalWrite(LED2,HIGH);
-    digitalWrite(LED3,HIGH);
-
-    delay(500);
 }
 
 
@@ -288,6 +237,14 @@ int setupWiringPiFunction() {
     pinMode(SW2, INPUT);
 
 
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
+    
+    LED1Flag = 0;
+    LED2Flag = 0;
+    
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &B1Interrupt) < 0 ) {
@@ -326,6 +283,7 @@ uint16_t get_ADC(int ADC_chan)
 
     return ((spiData[1] << 8) | spiData[2]);
 }
+
 
 void *readingADC(void* ptr){
     uint16_t ADCvalue;
@@ -424,7 +382,16 @@ public:
     void setupSocket();
     void send();
     void getIP();
+    string receiveFrom();
 };
+string socketObj::receiveFrom(){
+    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&clint, &fromlen)
+    if(n < 0)
+        cout << "Receive error " << endl;
+    
+    string str(buf);
+    return str;
+}
 int socketObj::getRTUID(){
     return myMachine;
 }
@@ -496,6 +463,36 @@ void socketObj::send(){
 }
 
 socketObj s1;
+
+void *turnLEDS(void* ptr){
+    string command = s1.receiveFrom();
+    string led1("LED1");
+    string led2("LED2");
+    if(command.compare(led1) == 0 ){
+        if(LED1Flag == 0){
+            digitalWrite(LED1,HIGH);
+            LED1Flag = 1;
+        }
+        else{
+            digitalWrite(LED1,LOW);
+            LED1Flag = 0;
+        }
+    }
+    else if(command.compare(led2) == 0){
+        if(LED1Flag == 0){
+            digitalWrite(LED2,HIGH);
+            LED1Flag = 1;
+        }
+        else{
+            digitalWrite(LED2,LOW);
+            LED2Flag = 0;
+        }
+    }
+    else
+        cout << "Command received is "<< command << endl;
+}
+
+
 int main(int argc, const char * argv[]) {
 
     
@@ -522,8 +519,9 @@ int main(int argc, const char * argv[]) {
     cout<<"RUT id is "<< s1.getRTUID();
 
     //create thread
-    pthread_t adcReading;
+    pthread_t adcReading, turnLEDs;
     pthread_create(&adcReading, NULL, readingADC, NULL);
+    pthread_create(&turnLeds, NULL, turnLEDS, NULL);
     while ( 1 ) {
         r1.print();
         s1.send();
