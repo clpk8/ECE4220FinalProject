@@ -391,6 +391,7 @@ string socketObj::receiveFrom(){
     
     cout << "buf is " << buf << endl;
     string str(buf);
+    cout << "Length of string is " << str.length() << endl;
     return str;
 }
 int socketObj::getRTUID(){
@@ -472,6 +473,7 @@ void *turnLEDS(void* ptr){
         cout << "Command is "<< command;
         string led1("LED1");
         string led2("LED2");
+        cout << "led string length is " << led1.length() << endl;
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
                 digitalWrite(LED1,HIGH);
