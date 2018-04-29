@@ -71,7 +71,7 @@ class RTU{
 private:
     LogData RTULogData;
 public:
-    LogData getRTUData();
+    char* getSendBuffer();
     int count[4] = {0,0,0,0};
     RTU();
     void setTime();
@@ -92,8 +92,8 @@ void RTU::concatBuffer(){
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
     
 }
-LogData RTU::getRTUData(){
-    return RTULogData;
+char * RTU::getSendBuffer(){
+    return RTULogData.sendBuffer;
 }
 void RTU::clearTypeEvent(){
     RTULogData.typeEvent = "Regular 1 second log";
@@ -469,13 +469,13 @@ void socketObj::setupSocket(){
 }
 
 void socketObj::send(){
-    LogData d1 = r1.getRTUData();
-    cout << d1.sendBuffer << endl;
-    n = sendto(sock,d1.sendBuffer, 100, 0, (struct sockaddr *)&client, fromlen);
+    n = sendto(sock,r1.getSendBuffer(), 100, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
     else
         cout << "sended" << endl;
+    
+    cout << "my buffer is "<< r1.getSendBuffer() << endl;
 }
 
 socketObj s1;
