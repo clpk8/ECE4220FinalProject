@@ -474,6 +474,8 @@ void *turnLEDS(void* ptr){
         string led1("LED1\0");
         string led2("LED2\n");
         cout << "led string length is " << led1.length() << endl;
+        cout << "led string length is " << led2.length() << endl;
+
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
                 digitalWrite(LED1,HIGH);
