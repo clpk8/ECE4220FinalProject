@@ -470,7 +470,7 @@ void socketObj::setupSocket(){
 
 void socketObj::send(){
     LogData d1 = r1.getRTUData();
-    n = sendto(sock,d1.sendBuffer, 100, 0, (struct sockaddr *)&client, fromlen);
+    n = sendto(sock,&d1.sendBuffer, 100, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
     else
