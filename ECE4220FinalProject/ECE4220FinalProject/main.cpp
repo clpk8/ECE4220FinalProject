@@ -385,7 +385,7 @@ public:
     string receiveFrom();
 };
 string socketObj::receiveFrom(){
-    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen)
+    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
     if(n < 0)
         cout << "Receive error " << endl;
     
