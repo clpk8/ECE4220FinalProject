@@ -487,9 +487,9 @@ void *turnLEDS(void* ptr){
             }
         }
         else if(command.compare(led2) == 0){
-            if(LED1Flag == 0){
+            if(LED2Flag == 0){
                 digitalWrite(LED2,HIGH);
-                LED1Flag = 1;
+                LED2Flag = 1;
             }
             else{
                 digitalWrite(LED2,LOW);
