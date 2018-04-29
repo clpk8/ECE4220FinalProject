@@ -389,6 +389,7 @@ string socketObj::receiveFrom(){
     if(n < 0)
         cout << "Receive error " << endl;
     
+    cou << "buf is " << buf << endl;
     string str(buf);
     return str;
 }
@@ -468,6 +469,7 @@ void *turnLEDS(void* ptr){
     cout << "Thread turnLEDS initilzied"
     while(1){
         string command = s1.receiveFrom();
+        cout << "Command is "<< command;
         string led1("LED1");
         string led2("LED2");
         if(command.compare(led1) == 0 ){
@@ -533,7 +535,7 @@ int main(int argc, const char * argv[]) {
         pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
-        delay(10000);
+        delay(100000);
     }
 
 
