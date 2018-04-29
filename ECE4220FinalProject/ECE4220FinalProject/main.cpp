@@ -90,6 +90,7 @@ char* RTU::concatBuffer(){
     sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%s%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent.c_str(),token);
     
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
+    return RTULogData.sendBuffer;
     
 }
 LogData RTU::getRTUData(){
@@ -469,8 +470,9 @@ void socketObj::setupSocket(){
 }
 
 void socketObj::send(){
-    LogData d1 = r1.getRTUData();
-    n = sendto(sock, &d1, sizeof(r1.getRTUData()), 0, (struct sockaddr *)&client, fromlen);
+   // LogData d1 = r1.getRTUData();
+    char temp [100] = r1.concatBuffer();
+    n = sendto(sock,temp, sizeof(temp), 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
     else
