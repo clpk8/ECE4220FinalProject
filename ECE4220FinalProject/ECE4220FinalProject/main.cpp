@@ -447,7 +447,8 @@ void socketObj::setupSocket(){
     server.sin_addr.s_addr = INADDR_ANY;        // IP address of the machine on which
     // the server is running
     server.sin_port = htons(port);    // port number
-    
+    fromlen = sizeof(struct sockaddr_in);    // size of structure
+
     // binds the socket to the address of the host and the port number
     if (bind(sock, (struct sockaddr *)&server, length) < 0){
         cerr<<"bind Error"<<endl;
@@ -462,11 +463,10 @@ void socketObj::setupSocket(){
         cerr << "receive error " << endl;
     
     //get the length
-    fromlen = sizeof(struct sockaddr_in);    // size of structure
 }
 
 void socketObj::send(RTU r1){
-    r1.print();
+   // r1.print();
     string temp = r1.getSendBuffer();
     char *tempBuf = (char*)temp.c_str();
     n = sendto(sock,tempBuf, 200, 0, (struct sockaddr *)&client, fromlen);
