@@ -473,7 +473,7 @@ void socketObj::setupSocket(){
 
 void socketObj::send(){
     string temp = r1.getSendBuffer();
-    char *tempBuf = (char*)temp;
+    char *tempBuf = (char*)temp.c_str();
     n = sendto(sock,tempBuf, 100, 0, (struct sockaddr *)&client, fromlen);
     if(n < 0 )
         cout << "send error" << endl;
