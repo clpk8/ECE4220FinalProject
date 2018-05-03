@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <sqlite3.h>
 #include <semaphore.h>
+#include <fcntl.h>
+
 
 #define MSG_SIZE 200            // message size
 
@@ -20,18 +22,18 @@ using namespace std;
 int main(int argc, char* argv[]){
     string signal;
     char buffer[MSG_SIZE];
-    string temp;
+    char* temp;
     int pipe_N_pipe2;
     if((pipe_N_pipe2 = open("N_pipe2",O_RDONLY)) < 0){
-        printf("N_pipe2 error");
+        cout << "N_pipe2 error" << endl;
         exit(-1);
     }
     
     if(read(pipe_N_pipe2,&signal,sizeof(signal) != sizeof(signal))
-        printf("N_pipe2 reading1 error\n");
-        
+       cout << "N_pipe2 reading1 error\n" << endl;
+       
        char delim[] = "|";
-
+       
        int RTU1, RTU2, port;
        temp = strtok(signal,delim);
        RTU1 = atoi(temp);
@@ -78,7 +80,7 @@ int main(int argc, char* argv[]){
                sprintf(ip, "128.206.19.%d",RTU2);
                anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
            }
-               
+           
            if(choice != '!')
            {
                // bzero: to "clean up" the buffer. The messages aren't always the same length.
@@ -86,14 +88,14 @@ int main(int argc, char* argv[]){
                //cleanbuffer(&buffer);
                fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
                
-               cout<< "Please enter "
+               cout<< "Please enter " << endl;
                // send message to anyone there...
                n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
                if(n < 0)
-                   error("Error: sendto");
+                   cout << "error" << endl;
            }
            
-
+           
            
            
        } while(signal[0] != '!');
