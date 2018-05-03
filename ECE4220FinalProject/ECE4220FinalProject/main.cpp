@@ -70,7 +70,7 @@ struct LogData
     bool B1;
     bool B2;
     unsigned short Voltage;
-    typeEvent typeEvent;
+    typeEvent typeEventBuffer;
     char sendBuffer[200];
 };
 
@@ -98,7 +98,7 @@ public:
 void RTU::concatBuffer(){
     bzero(RTULogData.sendBuffer, 200);
     char token = '|';
-    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent,token);
+    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEventBuffer,token);
     
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
     
@@ -108,7 +108,7 @@ string RTU::getSendBuffer(){
     return str;
 }
 void RTU::clearTypeEvent(){
-    RTULogData.typeEvent = REGULAR;
+    RTULogData.typeEventBuffer = REGULAR;
 }
 void RTU::print(){
     
@@ -116,7 +116,7 @@ void RTU::print(){
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
     
     cout << "Voltage value is: " << RTULogData.Voltage << endl;
-    cout << "The event happened is " << RTULogData.typeEvent << endl;
+    cout << "The event happened is " << RTULogData.typeEventBuffer << endl;
     cout << "Time stamp : " << RTULogData.timeBuffer << endl;
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
 }
@@ -153,7 +153,7 @@ void RTU::setVoltage(unsigned short V){
     RTULogData.Voltage = V;
 }
 void RTU::setTypeEvent(typeEvent str){
-    RTULogData.typeEvent = str;
+    RTULogData.typeEventBuffer = str;
 }
 RTU::RTU(){
     cout << "Globel RTU initilize"<<endl;
