@@ -20,13 +20,13 @@ void sevenSeg(int decimal){
     num/=2;
     d = num%2;
     
-    digitalWrite(LED_A, a);
-    digitalWrite(LED_B, b);
-    digitalWrite(LED_C, c);
-    digitalWrite(LED_D, d);
+    digitalWrite(A, a);
+    digitalWrite(B, b);
+    digitalWrite(C, c);
+    digitalWrite(D, d);
     
     if(!ledEnabled){
-        digitalWrite(LED_ENABLE, 1);
+        digitalWrite(DP, 1);
         ledEnabled = 1;
     }
 }
