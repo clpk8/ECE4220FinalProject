@@ -28,6 +28,12 @@ using namespace std;
 #define SW1   26
 #define SW2   23
 #define MSG_SIZE 40            // message size
+#define A 5
+#define B 6
+#define C 25
+#define D 2
+#define DP 29
+
 int portNum;
 int LED1Flag;
 int LED2Flag;
@@ -40,6 +46,29 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
+
+void sevenSeg(int decimal){
+    //decimal to binary
+    
+    digitalWrite(DP, HIGH);
+    int a[4], i;
+    
+    for(i = 0; decimal > 0; i++){
+        a[i] = decimal % 2;
+        decimal = decimal / 2;
+    }
+    
+    for(i = i-1; i > 0; i--){
+        if(i == 3)
+            digitalWrite(D, a[3]);
+        else if(i == 2)
+            digitalWrite(C, a[2]);
+        else if(i == 1)
+            digitalWrite(B, a[1]);
+        else if(i == 0)
+            digitalWrite(A, a[0]);
+    }
+}
 enum typeEvent{
     S1OFF,
     S1ON,
@@ -71,7 +100,7 @@ struct LogData
     bool B1;
     bool B2;
     unsigned short Voltage;
-    typeEvent typeEventBuffer;
+    typeEvent typeEventID;
     char sendBuffer[200];
 };
 
@@ -83,6 +112,7 @@ private:
     LogData RTULogData;
     
 public:
+    int returnTypeEvent(){return RTULogData.typeEventID;}
     string getSendBuffer();
     int count[4] = {0,0,0,0};
     RTU();
@@ -99,7 +129,7 @@ public:
 void RTU::concatBuffer(){
     bzero(RTULogData.sendBuffer, 200);
     char token = '|';
-    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEventBuffer,token);
+    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEventID,token);
     
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
     
@@ -109,7 +139,7 @@ string RTU::getSendBuffer(){
     return str;
 }
 void RTU::clearTypeEvent(){
-    RTULogData.typeEventBuffer = REGULAR;
+    RTULogData.typeEventID = REGULAR;
 }
 void RTU::print(){
     
@@ -117,7 +147,7 @@ void RTU::print(){
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
     
     cout << "Voltage value is: " << RTULogData.Voltage << endl;
-    cout << "The event happened is " << RTULogData.typeEventBuffer << endl;
+    cout << "The event happened is " << RTULogData.typeEventID << endl;
     cout << "Time stamp : " << RTULogData.timeBuffer << endl;
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
 }
@@ -328,6 +358,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
+                sevenSeg(r1.getSendBuffer());
                 LED1Flag = 1;
             }
             else if(LED1Flag == 1){
@@ -337,6 +368,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
+                sevenSeg(r1.getSendBuffer());
                 LED1Flag = 0;
             }
         }
@@ -347,8 +379,8 @@ void *turnLEDS(void* ptr){
                 r1.setTypeEvent(LED2ON);
                 r1.print();
                 r1.concatBuffer();
-
                 s1.send(r1);
+                sevenSeg(r1.getSendBuffer());
                 LED2Flag = 1;
             }
             else if(LED2Flag == 1){
@@ -357,8 +389,8 @@ void *turnLEDS(void* ptr){
                 r1.setTypeEvent(LED2OFF);
                 r1.print();
                 r1.concatBuffer();
-
                 s1.send(r1);
+                sevenSeg(r1.getSendBuffer());
                 LED2Flag = 0;
             }
         }
@@ -388,7 +420,7 @@ void B1Interrupt() {
         r1.concatBuffer();
 
         s1.send(r1);
-        
+        sevenSeg(r1.getSendBuffer());
         
     }
     lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
@@ -413,6 +445,8 @@ void B2Interrupt() {
         r1.concatBuffer();
 
         s1.send(r1);
+        sevenSeg(r1.getSendBuffer());
+
         
         
     }
@@ -436,6 +470,8 @@ void S1Interrupt() {
     r1.concatBuffer();
 
     s1.send(r1);
+    sevenSeg(r1.getSendBuffer());
+
     
 }
 void S2Interrupt() {
@@ -456,6 +492,8 @@ void S2Interrupt() {
     r1.concatBuffer();
 
     s1.send(r1);
+    sevenSeg(r1.getSendBuffer());
+
     
     
 }
@@ -530,7 +568,7 @@ void *readingADC(void* ptr){
                 r1.setTypeEvent(ADCPOWER);
                 r1.print();
                 r1.concatBuffer();
-
+                sevenSeg(r1.getSendBuffer());
                 s1.send(r1);
                 noPowerFlag = 1;
             }
@@ -546,6 +584,7 @@ void *readingADC(void* ptr){
                     r1.concatBuffer();
 
                     s1.send(r1);
+                    sevenSeg(r1.getSendBuffer());
                     adcBoundFlag = 1;
 
                 }
@@ -566,19 +605,32 @@ int setupWiringPiFunction() {
         cerr<< "Not able to setup wiringpi"<<endl;
         return -1;
     }
-    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
+    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
+    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
     pinMode(BTN1, INPUT);
     pinMode(BTN2, INPUT);
     pinMode(SW1, INPUT);
     pinMode(SW2, INPUT);
+    
+    //configure 7-seg display
+    pinMode(DP, OUTPUT);
+    pinMode(A, OUTPUT);
+    pinMode(B, OUTPUT);
+    pinMode(C, OUTPUT);
+    pinMode(D, OUTPUT);
     
     
     digitalWrite(LED1,LOW);
     digitalWrite(LED2,LOW);
     digitalWrite(LED3,LOW);
     digitalWrite(LED4,LOW);
+    
+    digitalWrite(A,LOW);
+    digitalWrite(B,LOW);
+    digitalWrite(C,LOW);
+    digitalWrite(D,LOW);
+    
     
     LED1Flag = 0;
     LED2Flag = 0;
@@ -685,6 +737,7 @@ int main(int argc, const char * argv[]) {
         r1.clearTypeEvent();
         r1.print();
         r1.concatBuffer();
+        sevenSeg(r1.getSendBuffer());
         s1.send(r1);
         cout << eventCounter<<endl;
         eventCounter = 0;
