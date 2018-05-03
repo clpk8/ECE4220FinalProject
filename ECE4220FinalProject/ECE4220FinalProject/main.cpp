@@ -16,7 +16,7 @@
 #include <stdlib.h>     /* atoi */
 #include <chrono>
 #include <pthread.h>
-
+#include <math.h>
 
 using namespace std;
 #define LED1  8        // wiringPi number corresponding to GPIO2.
@@ -60,9 +60,10 @@ enum typeEvent{
 
 struct LogData
 {
-    char timeBuffer [20];
+    char timeBuffer [26];
     time_t rawtime;
     struct tm * timeinfo;
+    struct timeval tvl;
     int RTUid;
     //buttons, True for on and open. False for closed and off
     bool S1;
@@ -121,10 +122,18 @@ void RTU::print(){
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
 }
 void RTU::setTime(){
-   // gettimeofday(&RTULogData.tvl, NULL);
+    char tempBuffer[26];
+    int millisec;
+    gettimeofday(&RTULogData.tvl, NULL);
+    millisec = lrint(RTULogData.tvl.tv_usec / 1000.0); //round to nearst millsecond
+    if(millisec >= 1000){
+        millisec -= 1000;
+        RTULogData.tvl.tv_sec++;
+    }
     time (&RTULogData.rawtime);
     RTULogData.timeinfo = localtime (&RTULogData.rawtime);
-    strftime(RTULogData.timeBuffer, sizeof(RTULogData.timeBuffer), "%Y-%m-%d %H:%M:%f", RTULogData.timeinfo);
+    strftime(tempBuffer, sizeof(tempBuffer), "%Y-%m-%d %H:%M:%f", RTULogData.timeinfo);
+    sprintf(RTULogData.timeBuffer, "%s.%03d",RTULogData.timeBuffer,millisec);
     
     // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
     //  cout << buffer << endl;
