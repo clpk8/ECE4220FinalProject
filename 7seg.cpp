@@ -8,6 +8,29 @@ using namespace std;
 #define C 25
 #define D 2
 #define DP 29
+void sevenSeg(int decimal){
+    //decimal to binary
+    
+    digitalWrite(DP, HIGH);
+    int a[4], i;
+    
+    for(i = 0; decimal > 0; i++){
+        a[i] = decimal % 2;
+        decimal = decimal / 2;
+    }
+    
+    for(i = i-1; i > 0; i--){
+        if(i == 3)
+            digitalWrite(D, a[3]);
+        else if(i == 2)
+            digitalWrite(C, a[2]);
+        else if(i == 1)
+            digitalWrite(B, a[1]);
+        else if(i == 0)
+            digitalWrite(A, a[0]);
+    }
+}
+
 int main()
 {
     cout << "Hello, World!";
@@ -29,33 +52,13 @@ int main()
     digitalWrite(B,LOW);
     digitalWrite(C,LOW);
     digitalWrite(D,LOW);
+    int num;
     
-    
-    cout << "1" << endl;
-    digitalWrite(DP, HIGH);
-
-    
-    digitalWrite(A,HIGH);
-    digitalWrite(B,HIGH);
-    digitalWrite(C,HIGH);
-    digitalWrite(D,HIGH);
-    
-    sleep(5);
-    cout << "2" << endl;
-
-    digitalWrite(A,HIGH);
-    digitalWrite(B,LOW);
-    digitalWrite(C,LOW);
-    digitalWrite(D,LOW);
-    
-    sleep(5);
-    cout << "3" << endl;
-
-    digitalWrite(A,LOW);
-    digitalWrite(B,LOW);
-    digitalWrite(C,LOW);
-    digitalWrite(D,LOW);
-    sleep(5);
+    while(1){
+        cin << num;
+        sevenSeg(num);
+        sleep(5);
+    }
     
     return 0;
 }
