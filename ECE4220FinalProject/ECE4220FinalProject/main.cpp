@@ -63,6 +63,7 @@ struct LogData
     char timeBuffer [20];
     time_t rawtime;
     struct tm * timeinfo;
+    struct timeval tvl;
     int RTUid;
     //buttons, True for on and open. False for closed and off
     bool S1;
@@ -121,9 +122,12 @@ void RTU::print(){
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
 }
 void RTU::setTime(){
+    gettimeofday(&RTULogData.tvl, NULL);
     time (&RTULogData.rawtime);
     RTULogData.timeinfo = localtime (&RTULogData.rawtime);
     strftime(RTULogData.timeBuffer, sizeof(RTULogData.timeBuffer), "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
+    sprintf(RTULogData.timeBuffer, ".%d",RTULogData.tvl.tv_usec);
+    
     // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
     //  cout << buffer << endl;
 }
