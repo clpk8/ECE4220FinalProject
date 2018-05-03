@@ -421,7 +421,7 @@ void S2Interrupt() {
 
 void *readingADC(void* ptr){
     uint16_t ADCvalue;
-    int adcArray[5] = {1,2,3,4,5};
+    uint16_t PADCvalue = 0;
     // Configure the SPI
     if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
         cout << "wiringPiSPISetup failed" << endl;
@@ -490,7 +490,7 @@ void *readingADC(void* ptr){
         
         
         i++;
-        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[1] == adcArray[0] && noPowerFlag == 0){
+        if(ADCvalue == PADCvalue && noPowerFlag == 0){
             r1.setTime();
             r1.setTypeEvent("Not power");
             r1.print();
