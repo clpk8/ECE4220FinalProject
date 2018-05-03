@@ -55,7 +55,7 @@ int main()
     int num;
     
     while(1){
-        cin << num;
+        cin >> num;
         sevenSeg(num);
         sleep(5);
     }
