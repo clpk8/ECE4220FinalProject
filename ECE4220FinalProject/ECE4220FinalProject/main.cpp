@@ -193,8 +193,8 @@ void RTU::setStatus(int choice, bool change){
 void RTU::setVoltage(unsigned short V){
     RTULogData.Voltage = V;
 }
-void RTU::setTypeEvent(typeEvent str){
-    RTULogData.typeEventBuffer = str;
+void RTU::setTypeEvent(typeEvent id){
+    RTULogData.typeEventID = id;
 }
 RTU::RTU(){
     cout << "Globel RTU initilize"<<endl;
@@ -358,7 +358,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
-                sevenSeg(r1.getSendBuffer());
+                sevenSeg(r1.returnTypeEvent());
                 LED1Flag = 1;
             }
             else if(LED1Flag == 1){
@@ -368,7 +368,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
-                sevenSeg(r1.getSendBuffer());
+                sevenSeg(r1.returnTypeEvent());
                 LED1Flag = 0;
             }
         }
@@ -380,7 +380,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
-                sevenSeg(r1.getSendBuffer());
+                sevenSeg(r1.returnTypeEvent());
                 LED2Flag = 1;
             }
             else if(LED2Flag == 1){
@@ -390,7 +390,7 @@ void *turnLEDS(void* ptr){
                 r1.print();
                 r1.concatBuffer();
                 s1.send(r1);
-                sevenSeg(r1.getSendBuffer());
+                sevenSeg(r1.returnTypeEvent());
                 LED2Flag = 0;
             }
         }
@@ -420,8 +420,8 @@ void B1Interrupt() {
         r1.concatBuffer();
 
         s1.send(r1);
-        sevenSeg(r1.getSendBuffer());
-        
+        sevenSeg(r1.returnTypeEvent());
+
     }
     lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
     
@@ -445,7 +445,7 @@ void B2Interrupt() {
         r1.concatBuffer();
 
         s1.send(r1);
-        sevenSeg(r1.getSendBuffer());
+        sevenSeg(r1.returnTypeEvent());
 
         
         
@@ -470,7 +470,7 @@ void S1Interrupt() {
     r1.concatBuffer();
 
     s1.send(r1);
-    sevenSeg(r1.getSendBuffer());
+    sevenSeg(r1.returnTypeEvent());
 
     
 }
@@ -492,7 +492,7 @@ void S2Interrupt() {
     r1.concatBuffer();
 
     s1.send(r1);
-    sevenSeg(r1.getSendBuffer());
+    sevenSeg(r1.returnTypeEvent());
 
     
     
@@ -568,7 +568,7 @@ void *readingADC(void* ptr){
                 r1.setTypeEvent(ADCPOWER);
                 r1.print();
                 r1.concatBuffer();
-                sevenSeg(r1.getSendBuffer());
+                sevenSeg(r1.returnTypeEvent());
                 s1.send(r1);
                 noPowerFlag = 1;
             }
@@ -584,7 +584,7 @@ void *readingADC(void* ptr){
                     r1.concatBuffer();
 
                     s1.send(r1);
-                    sevenSeg(r1.getSendBuffer());
+                    sevenSeg(r1.returnTypeEvent());
                     adcBoundFlag = 1;
 
                 }
@@ -737,7 +737,7 @@ int main(int argc, const char * argv[]) {
         r1.clearTypeEvent();
         r1.print();
         r1.concatBuffer();
-        sevenSeg(r1.getSendBuffer());
+        sevenSeg(r1.returnTypeEvent());
         s1.send(r1);
         cout << eventCounter<<endl;
         eventCounter = 0;
