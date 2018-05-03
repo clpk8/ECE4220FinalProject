@@ -640,8 +640,6 @@ int main(int argc, const char * argv[]) {
         r1.print();
         r1.concatBuffer();
         s1.send(r1);
-        pullUpDnControl(BTN1,PUD_DOWN);//first set the push button's register down for input
-        pullUpDnControl(BTN2,PUD_DOWN);//first set the push button's register down for input
         cout << eventCounter<<endl;
         eventCounter = 0;
         // delay(10000);
