@@ -23,6 +23,12 @@ int main()
     pinMode(C, OUTPUT);
     pinMode(D, OUTPUT);
     pinMode(DP, OUTPUT);
+    digitalWrite(DP, LOW);
+    digitalWrite(A,LOW);
+    digitalWrite(B,LOW);
+    digitalWrite(C,LOW);
+    digitalWrite(D,LOW);
+    
     
     cout << "1" << endl;
     digitalWrite(DP, HIGH);
