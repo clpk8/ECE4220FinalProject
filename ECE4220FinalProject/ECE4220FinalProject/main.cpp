@@ -483,12 +483,14 @@ void *readingADC(void* ptr){
         ADCvalue = get_ADC(ADC_CHANNEL);
         r1.setVoltage(ADCvalue);
         
-        if(ADCvalue == PADCvalue && noPowerFlag == 0){
-            r1.setTime();
-            r1.setTypeEvent("Not power");
-            r1.print();
-            s1.send(r1);
-            noPowerFlag = 1;
+        if(ADCvalue == PADCvalue){
+            if(noPowerFlag == 0){
+                r1.setTime();
+                r1.setTypeEvent("Not power");
+                r1.print();
+                s1.send(r1);
+                noPowerFlag = 1;
+            }
         }
         else{
             PADCvalue = ADCvalue;
@@ -499,11 +501,13 @@ void *readingADC(void* ptr){
                     r1.setTypeEvent("ADC volatege out of bound");
                     r1.print();
                     s1.send(r1);
+                    adcBoundFlag = 1;
+
                 }
 
             }
             else
-                adcBoundFlag = 1;
+                adcBoundFlag = 0;
         }
 
     }
