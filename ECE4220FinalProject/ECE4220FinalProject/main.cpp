@@ -737,7 +737,7 @@ int main(int argc, const char * argv[]) {
         r1.clearTypeEvent();
         r1.print();
         r1.concatBuffer();
-        sevenSeg(r1.returnTypeEvent());
+      //  sevenSeg(r1.returnTypeEvent());
         s1.send(r1);
         cout << eventCounter<<endl;
         eventCounter = 0;
