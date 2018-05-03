@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui sql
+QMAKE_CXXFLAGS += -std=c++0x -pthread
 LIBS += -pthread
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

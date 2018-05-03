@@ -44,7 +44,6 @@ public:
     friend class sending;
     explicit Console(QWidget *parent = 0);
      LogData data;
-     //static void *receiving();
      unsigned int length;
      int sock;
      int n;
