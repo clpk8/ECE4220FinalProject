@@ -25,7 +25,7 @@ void sevenSeg(int decimal){
         else if(i == 2)
             digitalWrite(C, a[i]);
         else if(i == 1)
-            digitalWrite(B, a[i]);
+            digitalWrite(B, a[i]);
         else if(i == 0)i
             digitalWrite(A, a[i]);
     }
