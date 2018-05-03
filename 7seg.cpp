@@ -11,23 +11,23 @@ using namespace std;
 void sevenSeg(int decimal){
     //decimal to binary
     
-    digitalWrite(DP, HIGH);
-    int a[4], i;
+    int a, b, c, d;
+    a = num%2;
+    num/=2;
+    b = num%2;
+    num/=2;
+    c = num%2;
+    num/=2;
+    d = num%2;
     
-    for(i = 0; decimal > 0; i++){
-        a[i] = decimal % 2;
-        decimal = decimal / 2;
-    }
+    digitalWrite(LED_A, a);
+    digitalWrite(LED_B, b);
+    digitalWrite(LED_C, c);
+    digitalWrite(LED_D, d);
     
-    for(i = i-1; i > 0; i--){
-        if(i == 3)
-            digitalWrite(D, a[3]);
-        else if(i == 2)
-            digitalWrite(C, a[2]);
-        else if(i == 1)
-            digitalWrite(B, a[1]);
-        else if(i == 0)
-            digitalWrite(A, a[0]);
+    if(!ledEnabled){
+        digitalWrite(LED_ENABLE, 1);
+        ledEnabled = 1;
     }
 }
 
