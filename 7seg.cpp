@@ -12,14 +12,15 @@ void sevenSeg(int decimal){
     //decimal to binary
     
     digitalWrite(DP, HIGH);
-    int a[4], i;
+    int a[4] = {0};
+    int i;
     
     for(i = 0; decimal > 0; i++){
         a[i] = decimal % 2;
         decimal = decimal / 2;
     }
     
-    for(i = i-1; i > 0; i--){
+    for(i = 3; i>0 0; i--){
         if(i == 3)
             digitalWrite(D, a[i]);
         else if(i == 2)
