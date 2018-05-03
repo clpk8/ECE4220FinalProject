@@ -467,6 +467,8 @@ void *readingADC(void* ptr){
     int adcUpperBound = 350;
     int adcLowerBound = 150;
     int i = 0;
+    int noPowerFlag = 0;
+    int adcBoundFlag = 0;
 
     while(1){
         long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
@@ -479,9 +481,6 @@ void *readingADC(void* ptr){
         }
         
         ADCvalue = get_ADC(ADC_CHANNEL);
-        //    cout<< "ADC Value: " << ADCvalue << endl;
-        //  fprintf(fp,"%d\n",ADCvalue);
-        //  fflush(stdout);
         r1.setVoltage(ADCvalue);
         if(i < 5){
             adcArray[i] = ADCvalue;
@@ -489,22 +488,29 @@ void *readingADC(void* ptr){
         else
             i = 0;
         
+        
         i++;
-        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[1] == adcArray[0]){
-            cout << "111" << endl;
+        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[1] == adcArray[0] && noPowerFlag == 0){
             r1.setTime();
             r1.setTypeEvent("Not power");
             r1.print();
             s1.send(r1);
+            noPowerFlag = 1;
         }
         else{
+            noPowerFlag = 0;
             if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
-                cout << "adc array is " << adcArray << endl;
-                r1.setTime();
-                r1.setTypeEvent("ADC volatege out of bound");
-                r1.print();
-                s1.send(r1);
+                if(adcBoundFlag == 0){
+                    cout << "adc array is " << adcArray << endl;
+                    r1.setTime();
+                    r1.setTypeEvent("ADC volatege out of bound");
+                    r1.print();
+                    s1.send(r1);
+                }
+
             }
+            else
+                adcBoundFlag = 1;
         }
 
     }
