@@ -11,6 +11,7 @@ using namespace std;
 int main()
 {
     cout << "Hello, World!";
+    
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
         cerr<< "Not able to setup wiringpi"<<endl;
@@ -23,6 +24,7 @@ int main()
     pinMode(D, OUTPUT);
     pinMode(DP, OUTPUT);
     
+    cout << "1" << endl;
     digitalWrite(DP, HIGH);
 
     
@@ -32,14 +34,16 @@ int main()
     digitalWrite(D,HIGH);
     
     sleep(5);
-    
+    cout << "2" << endl;
+
     digitalWrite(A,HIGH);
     digitalWrite(B,LOW);
     digitalWrite(C,LOW);
     digitalWrite(D,LOW);
     
     sleep(5);
-    
+    cout << "3" << endl;
+
     digitalWrite(A,LOW);
     digitalWrite(B,LOW);
     digitalWrite(C,LOW);
