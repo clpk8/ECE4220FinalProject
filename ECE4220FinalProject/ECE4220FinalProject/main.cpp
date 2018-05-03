@@ -146,84 +146,6 @@ volatile int eventCounter = 0;
 
 RTU r1;
 
-void B1Interrupt() {
-    gettimeofday(&interruptTimeB1, NULL);
-    cout << "interrupt happened" << endl;
-    if((interruptTimeB1.tv_sec - lastInterruptTimeB1.tv_sec)*1000000 + (interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec) > 250000){
-        r1.setTime();
-        r1.count[0]++;
-        //odd is on
-        if(r1.count[0] %2 == 1){
-            r1.setStatus(1, true);
-            r1.setTypeEvent("Button is turn on");
-        }
-        else{
-            r1.setStatus(1, false);
-            r1.setTypeEvent("Button is turn off");
-        }
-        r1.print();
-        
-        
-    }
-    lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
-    
-}
-void B2Interrupt() {
-    
-    gettimeofday(&interruptTimeB2, NULL);
-    cout << "interrupt happened" << endl;
-    if(((interruptTimeB2.tv_sec - lastInterruptTimeB2.tv_sec)*1000000 + (interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec) > 250000)){
-        r1.setTime();
-        r1.count[1]++;
-        if(r1.count[1] %2 == 1){
-            r1.setStatus(2, true);
-            r1.setTypeEvent("Button 2 is turn on");
-        }
-        else{
-            r1.setStatus(2, false);
-            r1.setTypeEvent("Button 2 is turn off");
-        }
-        r1.print();
-        
-        
-    }
-    
-    lastInterruptTimeB2.tv_usec = interruptTimeB2.tv_usec;
-    
-}
-void S1Interrupt() {
-    
-    r1.setTime();
-    r1.count[2]++;
-    if(r1.count[2] %2 == 1){
-        r1.setStatus(3, true);
-        r1.setTypeEvent("Switch 1 is turn on");
-    }
-    else{
-        r1.setStatus(3, false);
-        r1.setTypeEvent("Switch 1 is turn off");
-    }
-    r1.print();
-    
-}
-void S2Interrupt() {
-    
-    
-    r1.setTime();
-    r1.count[3]++;
-    if(r1.count[3] %2 == 1){
-        r1.setStatus(4, true);
-        r1.setTypeEvent("Switch 2 is turn on");
-        
-    }
-    else{
-        r1.setStatus(4, false);
-        r1.setTypeEvent("Switch 2 is turn off");
-    }
-    r1.print();
-    
-    
-}
 
 
 int setupWiringPiFunction() {
@@ -289,80 +211,6 @@ uint16_t get_ADC(int ADC_chan)
     return ((spiData[1] << 8) | spiData[2]);
 }
 
-
-void *readingADC(void* ptr){
-    uint16_t ADCvalue;
-    
-    // Configure the SPI
-    if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
-        cout << "wiringPiSPISetup failed" << endl;
-        //return -1 ;
-    }
-    
-    
-    struct sched_param param;
-    param.sched_priority = 51;
-    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
-    //check error
-    
-    if(check < 0){
-        cout << "Error assignning priority" << endl;
-    }
-    
-    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
-    if(timer_fd < 0){
-        cout << "Create timer error" << endl;
-        //exit(-1);
-    }
-    //set timmer
-    struct itimerspec itval;
-    itval.it_interval.tv_sec = 0;
-    itval.it_interval.tv_nsec = 100000000;//period of 100 ms
-    
-    itval.it_value.tv_sec = 0;
-    itval.it_value.tv_nsec = 100;//start a little bit late first time
-    
-    timerfd_settime(timer_fd, 0, &itval, NULL);
-    
-    //read to get it sync
-    uint64_t num_periods = 0;
-    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
-    if(check1 < 0){
-        cout << "Readfile " << endl;
-    }
-    
-    if(num_periods > 1){
-        cout << "MISSED WINDLW " << endl;
-    }
-    
-    int adcUpperBound = 350;
-    int adcLowerBound = 150;
-    
-    while(1){
-        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
-        if(check1 < 0){
-            cout << "Readfile " << endl;
-        }
-        
-        if(num_periods > 1){
-            cout << "Readfile " << endl;
-        }
-        
-        ADCvalue = get_ADC(ADC_CHANNEL);
-        //    cout<< "ADC Value: " << ADCvalue << endl;
-        //  fprintf(fp,"%d\n",ADCvalue);
-        //  fflush(stdout);
-        r1.setVoltage(ADCvalue);
-        if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
-            r1.setTime();
-            r1.setTypeEvent("ADC volatege out of bound");
-            //          r1.print();
-        }
-        
-        //usleep(1000);
-    }
-    
-}
 
 class socketObj{
 private:
@@ -493,20 +341,36 @@ void *turnLEDS(void* ptr){
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
                 digitalWrite(LED1,HIGH);
+                r1.setTime();
+                r1.setTypeEvent("LED1 was turned on");
+                r1.print();
+                s1.send(r1);
                 LED1Flag = 1;
             }
             else if(LED1Flag == 1){
                 digitalWrite(LED1,LOW);
+                r1.setTime();
+                r1.setTypeEvent("LED1 was turned off");
+                r1.print();
+                s1.send(r1);
                 LED1Flag = 0;
             }
         }
         else if(command.compare(led2) == 0){
             if(LED2Flag == 0){
                 digitalWrite(LED2,HIGH);
+                r1.setTime();
+                r1.setTypeEvent("LED2 was turned on");
+                r1.print();
+                s1.send(r1);
                 LED2Flag = 1;
             }
             else if(LED2Flag == 1){
                 digitalWrite(LED2,LOW);
+                r1.setTime();
+                r1.setTypeEvent("LED1 was turned off");
+                r1.print();
+                s1.send(r1);
                 LED2Flag = 0;
             }
         }
@@ -515,6 +379,181 @@ void *turnLEDS(void* ptr){
     }
     
 }
+
+
+void B1Interrupt() {
+    gettimeofday(&interruptTimeB1, NULL);
+    cout << "interrupt happened" << endl;
+    if((interruptTimeB1.tv_sec - lastInterruptTimeB1.tv_sec)*1000000 + (interruptTimeB1.tv_usec - lastInterruptTimeB1.tv_usec) > 250000){
+        r1.setTime();
+        r1.count[0]++;
+        //odd is on
+        if(r1.count[0] %2 == 1){
+            r1.setStatus(1, true);
+            r1.setTypeEvent("Button is turn on");
+        }
+        else{
+            r1.setStatus(1, false);
+            r1.setTypeEvent("Button is turn off");
+        }
+        r1.print();
+        s1.send(r1);
+        
+        
+    }
+    lastInterruptTimeB1.tv_usec = interruptTimeB1.tv_usec;
+    
+}
+void B2Interrupt() {
+    
+    gettimeofday(&interruptTimeB2, NULL);
+    cout << "interrupt happened" << endl;
+    if(((interruptTimeB2.tv_sec - lastInterruptTimeB2.tv_sec)*1000000 + (interruptTimeB2.tv_usec - lastInterruptTimeB2.tv_usec) > 250000)){
+        r1.setTime();
+        r1.count[1]++;
+        if(r1.count[1] %2 == 1){
+            r1.setStatus(2, true);
+            r1.setTypeEvent("Button 2 is turn on");
+        }
+        else{
+            r1.setStatus(2, false);
+            r1.setTypeEvent("Button 2 is turn off");
+        }
+        r1.print();
+        s1.send(r1);
+        
+        
+    }
+    
+    lastInterruptTimeB2.tv_usec = interruptTimeB2.tv_usec;
+    
+}
+void S1Interrupt() {
+    
+    r1.setTime();
+    r1.count[2]++;
+    if(r1.count[2] %2 == 1){
+        r1.setStatus(3, true);
+        r1.setTypeEvent("Switch 1 is turn on");
+    }
+    else{
+        r1.setStatus(3, false);
+        r1.setTypeEvent("Switch 1 is turn off");
+    }
+    r1.print();
+    s1.send(r1);
+    
+}
+void S2Interrupt() {
+    
+    
+    r1.setTime();
+    r1.count[3]++;
+    if(r1.count[3] %2 == 1){
+        r1.setStatus(4, true);
+        r1.setTypeEvent("Switch 2 is turn on");
+        
+    }
+    else{
+        r1.setStatus(4, false);
+        r1.setTypeEvent("Switch 2 is turn off");
+    }
+    r1.print();
+    s1.send(r1);
+    
+    
+}
+
+void *readingADC(void* ptr){
+    uint16_t ADCvalue;
+    int adcArray[5] = {1,2,3,4,5};
+    // Configure the SPI
+    if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
+        cout << "wiringPiSPISetup failed" << endl;
+        //return -1 ;
+    }
+    
+    
+    struct sched_param param;
+    param.sched_priority = 51;
+    int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
+    //check error
+    
+    if(check < 0){
+        cout << "Error assignning priority" << endl;
+    }
+    
+    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+    if(timer_fd < 0){
+        cout << "Create timer error" << endl;
+        //exit(-1);
+    }
+    //set timmer
+    struct itimerspec itval;
+    itval.it_interval.tv_sec = 0;
+    itval.it_interval.tv_nsec = 100000000;//period of 100 ms
+    
+    itval.it_value.tv_sec = 0;
+    itval.it_value.tv_nsec = 100;//start a little bit late first time
+    
+    timerfd_settime(timer_fd, 0, &itval, NULL);
+    
+    //read to get it sync
+    uint64_t num_periods = 0;
+    long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+    if(check1 < 0){
+        cout << "Readfile " << endl;
+    }
+    
+    if(num_periods > 1){
+        cout << "MISSED WINDLW " << endl;
+    }
+    
+    int adcUpperBound = 350;
+    int adcLowerBound = 150;
+    int i = 0;
+
+    while(1){
+        long check1 = read(timer_fd, &num_periods, sizeof(num_periods));
+        if(check1 < 0){
+            cout << "Readfile " << endl;
+        }
+        
+        if(num_periods > 1){
+            cout << "Readfile " << endl;
+        }
+        
+        ADCvalue = get_ADC(ADC_CHANNEL);
+        //    cout<< "ADC Value: " << ADCvalue << endl;
+        //  fprintf(fp,"%d\n",ADCvalue);
+        //  fflush(stdout);
+        r1.setVoltage(ADCvalue);
+        if(i < 5){
+            adcArray[i] = ADCvalue;
+        }
+        else
+            i = 0;
+        
+        i++;
+        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[0] == adcArray[5] && adcArray[1]){
+            r1.setTime();
+            r1.setTypeEvent("Not power");
+            r1.print();
+            s1.send(r1);
+        }
+        else{
+            if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
+                r1.setTime();
+                r1.setTypeEvent("ADC volatege out of bound");
+                r1.print();
+                s1.send(r1);
+            }
+        }
+
+    }
+    
+}
+
 
 
 int main(int argc, const char * argv[]) {
