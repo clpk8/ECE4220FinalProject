@@ -8,8 +8,9 @@ using namespace std;
 #define C 25
 #define D 2
 #define DP 29
-void sevenSeg(int decimal){
+void sevenSeg(int num){
     //decimal to binary
+    digitalWrite(DP, 1);
     
     int a, b, c, d;
     a = num%2;
@@ -25,10 +26,6 @@ void sevenSeg(int decimal){
     digitalWrite(C, c);
     digitalWrite(D, d);
     
-    if(!ledEnabled){
-        digitalWrite(DP, 1);
-        ledEnabled = 1;
-    }
 }
 
 int main()
