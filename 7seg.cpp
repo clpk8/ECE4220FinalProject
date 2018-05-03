@@ -8,24 +8,27 @@ using namespace std;
 #define C 25
 #define D 2
 #define DP 29
-void sevenSeg(int num){
+void sevenSeg(int decimal){
     //decimal to binary
-    digitalWrite(DP, 1);
     
-    int a, b, c, d;
-    a = num%2;
-    num/=2;
-    b = num%2;
-    num/=2;
-    c = num%2;
-    num/=2;
-    d = num%2;
+    digitalWrite(DP, HIGH);
+    int a[4], i;
     
-    digitalWrite(A, a);
-    digitalWrite(B, b);
-    digitalWrite(C, c);
-    digitalWrite(D, d);
+    for(i = 0; decimal > 0; i++){
+        a[i] = decimal % 2;
+        decimal = decimal / 2;
+    }
     
+    for(i = i-1; i > 0; i--){
+        if(i == 3)
+            digitalWrite(D, a[i]);
+        else if(i == 2)
+            digitalWrite(C, a[i]);
+        else if(i == 1)
+            digitalWrite(B, a[i]);
+        else if(i == 0)i
+            digitalWrite(A, a[i]);
+    }
 }
 
 int main()
