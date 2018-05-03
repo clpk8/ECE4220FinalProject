@@ -482,11 +482,6 @@ void *readingADC(void* ptr){
         
         ADCvalue = get_ADC(ADC_CHANNEL);
         r1.setVoltage(ADCvalue);
-        if(i < 5){
-            adcArray[i] = ADCvalue;
-        }
-        else
-            i = 0;
         
         
         i++;
@@ -501,7 +496,6 @@ void *readingADC(void* ptr){
             noPowerFlag = 0;
             if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
                 if(adcBoundFlag == 0){
-                    cout << "adc array is " << adcArray << endl;
                     r1.setTime();
                     r1.setTypeEvent("ADC volatege out of bound");
                     r1.print();
