@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <sqlite3.h>
 #include <semaphore.h>
+#include <fcntl.h>
+
 
 sem_t semaphore;
 
@@ -21,6 +23,11 @@ sem_t semaphore;
 using namespace std;
 
 struct sockaddr_in anybody;    // for the socket configuration
+
+sqlite3 *db;
+char *zErrMsg = 0;
+int rc;
+char *sql;
 
 void error(const char *msg)
 {
@@ -44,10 +51,7 @@ int main(int argc, char *argv[])
 {
     sem_init(&semaphore, 0, -1);
     
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int rc;
-    char *sql;
+
     
     /* Open database */
     rc = sqlite3_open("SCADA.db", &db);
@@ -114,7 +118,7 @@ int main(int argc, char *argv[])
     
     sem_wait(&semaphore);
     sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
-    dummy = system("mkfifo N_pipe2");
+    int dummy = system("mkfifo N_pipe2");
     
     if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
         printf("N_pipe2 error");
@@ -242,7 +246,7 @@ void *receiving(void *ptr)
         
         sprintf(sql, "insert into insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp,RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried);
         
-        rc = sqlite3_exec(db, sql, callbacl, 0, &zErrMsg);
+        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
         if( rc != SQLITE_OK ){
             fprintf(stderr, "SQL error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
