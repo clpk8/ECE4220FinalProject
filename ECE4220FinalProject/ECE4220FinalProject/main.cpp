@@ -40,7 +40,23 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
-
+enum typeEvent{
+    S1OFF,
+    S1ON,
+    S2OFF,
+    S2ON,
+    B1OFF,
+    B1ON,
+    B2OFF,
+    B2ON,
+    ADCBOUND,
+    ADCPOWER,
+    LED1ON,
+    LED1OFF,
+    LED2ON,
+    LED2OFF,
+    REGULAR
+};
 
 struct LogData
 {
@@ -54,7 +70,7 @@ struct LogData
     bool B1;
     bool B2;
     unsigned short Voltage;
-    string typeEvent;
+    typeEvent typeEvent;
     char sendBuffer[200];
 };
 
@@ -73,7 +89,7 @@ public:
     void setRTUid(int id);
     void setStatus(int choice, bool change);
     void setVoltage(unsigned short V);
-    void setTypeEvent(string str);
+    void setTypeEvent(typeEvent str);
     void print();
     void clearTypeEvent();
     void concatBuffer();
@@ -82,7 +98,7 @@ public:
 void RTU::concatBuffer(){
     bzero(RTULogData.sendBuffer, 200);
     char token = '|';
-    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%s%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent.c_str(),token);
+    sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEvent,token);
     
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
     
@@ -92,7 +108,7 @@ string RTU::getSendBuffer(){
     return str;
 }
 void RTU::clearTypeEvent(){
-    RTULogData.typeEvent = "Regular 1 second log";
+    RTULogData.typeEvent = REGULAR;
 }
 void RTU::print(){
     
@@ -136,7 +152,7 @@ void RTU::setStatus(int choice, bool change){
 void RTU::setVoltage(unsigned short V){
     RTULogData.Voltage = V;
 }
-void RTU::setTypeEvent(string str){
+void RTU::setTypeEvent(typeEvent str){
     RTULogData.typeEvent = str;
 }
 RTU::RTU(){
@@ -297,16 +313,18 @@ void *turnLEDS(void* ptr){
             if(LED1Flag == 0){
                 digitalWrite(LED1,HIGH);
                 r1.setTime();
-                r1.setTypeEvent("LED1 was turned on");
+                r1.setTypeEvent(LED1ON);
                 r1.print();
+                r1.concatBuffer();
                 s1.send(r1);
                 LED1Flag = 1;
             }
             else if(LED1Flag == 1){
                 digitalWrite(LED1,LOW);
                 r1.setTime();
-                r1.setTypeEvent("LED1 was turned off");
+                r1.setTypeEvent(LED1OFF);
                 r1.print();
+                r1.concatBuffer();
                 s1.send(r1);
                 LED1Flag = 0;
             }
@@ -315,16 +333,20 @@ void *turnLEDS(void* ptr){
             if(LED2Flag == 0){
                 digitalWrite(LED2,HIGH);
                 r1.setTime();
-                r1.setTypeEvent("LED2 was turned on");
+                r1.setTypeEvent(LED2ON);
                 r1.print();
+                r1.concatBuffer();
+
                 s1.send(r1);
                 LED2Flag = 1;
             }
             else if(LED2Flag == 1){
                 digitalWrite(LED2,LOW);
                 r1.setTime();
-                r1.setTypeEvent("LED1 was turned off");
+                r1.setTypeEvent(LED2OFF);
                 r1.print();
+                r1.concatBuffer();
+
                 s1.send(r1);
                 LED2Flag = 0;
             }
@@ -345,13 +367,15 @@ void B1Interrupt() {
         //odd is on
         if(r1.count[0] %2 == 1){
             r1.setStatus(1, true);
-            r1.setTypeEvent("Button is turn on");
+            r1.setTypeEvent(B1ON);
         }
         else{
             r1.setStatus(1, false);
-            r1.setTypeEvent("Button is turn off");
+            r1.setTypeEvent(B1OFF);
         }
         r1.print();
+        r1.concatBuffer();
+
         s1.send(r1);
         
         
@@ -368,13 +392,15 @@ void B2Interrupt() {
         r1.count[1]++;
         if(r1.count[1] %2 == 1){
             r1.setStatus(2, true);
-            r1.setTypeEvent("Button 2 is turn on");
+            r1.setTypeEvent(B2ON);
         }
         else{
             r1.setStatus(2, false);
-            r1.setTypeEvent("Button 2 is turn off");
+            r1.setTypeEvent(B2OFF);
         }
         r1.print();
+        r1.concatBuffer();
+
         s1.send(r1);
         
         
@@ -389,13 +415,15 @@ void S1Interrupt() {
     r1.count[2]++;
     if(r1.count[2] %2 == 1){
         r1.setStatus(3, true);
-        r1.setTypeEvent("Switch 1 is turn on");
+        r1.setTypeEvent(S1ON);
     }
     else{
         r1.setStatus(3, false);
-        r1.setTypeEvent("Switch 1 is turn off");
+        r1.setTypeEvent(S1OFF);
     }
     r1.print();
+    r1.concatBuffer();
+
     s1.send(r1);
     
 }
@@ -406,14 +434,16 @@ void S2Interrupt() {
     r1.count[3]++;
     if(r1.count[3] %2 == 1){
         r1.setStatus(4, true);
-        r1.setTypeEvent("Switch 2 is turn on");
+        r1.setTypeEvent(S2ON);
         
     }
     else{
         r1.setStatus(4, false);
-        r1.setTypeEvent("Switch 2 is turn off");
+        r1.setTypeEvent(S2OFF);
     }
     r1.print();
+    r1.concatBuffer();
+
     s1.send(r1);
     
     
@@ -486,8 +516,10 @@ void *readingADC(void* ptr){
         if(ADCvalue == PADCvalue){
             if(noPowerFlag == 0){
                 r1.setTime();
-                r1.setTypeEvent("Not power");
+                r1.setTypeEvent(ADCPOWER);
                 r1.print();
+                r1.concatBuffer();
+
                 s1.send(r1);
                 noPowerFlag = 1;
             }
@@ -498,8 +530,10 @@ void *readingADC(void* ptr){
             if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
                 if(adcBoundFlag == 0){
                     r1.setTime();
-                    r1.setTypeEvent("ADC volatege out of bound");
+                    r1.setTypeEvent(ADCBOUND);
                     r1.print();
+                    r1.concatBuffer();
+
                     s1.send(r1);
                     adcBoundFlag = 1;
 
