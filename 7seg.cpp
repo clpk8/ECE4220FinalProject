@@ -17,13 +17,14 @@ int main()
         cerr<< "Not able to setup wiringpi"<<endl;
         return -1;
     }
-    
+    pinMode(DP, OUTPUT);
     pinMode(A, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(B, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
     pinMode(C, OUTPUT);
     pinMode(D, OUTPUT);
-    pinMode(DP, OUTPUT);
-    digitalWrite(DP, LOW);
+    
+    
+    //digitalWrite(DP, LOW);
     digitalWrite(A,LOW);
     digitalWrite(B,LOW);
     digitalWrite(C,LOW);
