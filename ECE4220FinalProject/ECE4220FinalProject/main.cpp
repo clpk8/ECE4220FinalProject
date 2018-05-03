@@ -40,6 +40,8 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
+
+
 struct LogData
 {
     char timeBuffer [20];
@@ -145,53 +147,6 @@ RTU::RTU(){
 volatile int eventCounter = 0;
 
 RTU r1;
-
-
-
-int setupWiringPiFunction() {
-    // sets up the wiringPi library
-    if (wiringPiSetup () < 0) {
-        // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
-        cerr<< "Not able to setup wiringpi"<<endl;
-        return -1;
-    }
-    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
-    pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
-    pinMode(SW1, INPUT);
-    pinMode(SW2, INPUT);
-    
-    
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
-    digitalWrite(LED3,LOW);
-    digitalWrite(LED4,LOW);
-    
-    LED1Flag = 0;
-    LED2Flag = 0;
-    
-    // set Pin 17/0 generate an interrupt on high-to-low transitions
-    // and attach myInterrupt() to the interrupt
-    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &B1Interrupt) < 0 ) {
-        cerr<<"Not able to setup IRS"<<endl;
-        return -1;
-    }
-    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &B2Interrupt) < 0 ) {
-        cerr<<"Not able to setup IRS"<<endl;
-        return -1;
-    }
-    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &S1Interrupt) < 0 ) {
-        cerr<<"Not able to setup IRS"<<endl;
-        return -1;
-    }
-    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &S2Interrupt) < 0 ) {
-        cerr<<"Not able to setup IRS"<<endl;
-        return -1;
-    }
-}
-
 uint16_t get_ADC(int ADC_chan)
 {
     uint8_t spiData[3];
@@ -554,6 +509,49 @@ void *readingADC(void* ptr){
     
 }
 
+int setupWiringPiFunction() {
+    // sets up the wiringPi library
+    if (wiringPiSetup () < 0) {
+        // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
+        cerr<< "Not able to setup wiringpi"<<endl;
+        return -1;
+    }
+    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the red LED.
+    pinMode(BTN1, INPUT);
+    pinMode(BTN2, INPUT);
+    pinMode(SW1, INPUT);
+    pinMode(SW2, INPUT);
+    
+    
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(LED4,LOW);
+    
+    LED1Flag = 0;
+    LED2Flag = 0;
+    
+    // set Pin 17/0 generate an interrupt on high-to-low transitions
+    // and attach myInterrupt() to the interrupt
+    if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &B1Interrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return -1;
+    }
+    if ( wiringPiISR (BTN2, INT_EDGE_FALLING, &B2Interrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return -1;
+    }
+    if ( wiringPiISR (SW1, INT_EDGE_BOTH, &S1Interrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return -1;
+    }
+    if ( wiringPiISR (SW2, INT_EDGE_BOTH, &S2Interrupt) < 0 ) {
+        cerr<<"Not able to setup IRS"<<endl;
+        return -1;
+    }
+}
 
 
 int main(int argc, const char * argv[]) {
