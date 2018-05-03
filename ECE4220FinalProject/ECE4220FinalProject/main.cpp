@@ -420,6 +420,7 @@ void B1Interrupt() {
         r1.concatBuffer();
 
         s1.send(r1);
+        cout << "event is " << r1.returnTypeEvent() << endl;
         sevenSeg(r1.returnTypeEvent());
 
     }
