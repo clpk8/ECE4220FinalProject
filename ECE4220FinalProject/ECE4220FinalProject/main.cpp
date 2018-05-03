@@ -130,10 +130,10 @@ void RTU::setTime(){
         millisec -= 1000;
         RTULogData.tvl.tv_sec++;
     }
-    time (&RTULogData.rawtime);
-    RTULogData.timeinfo = localtime (&RTULogData.rawtime);
-    strftime(tempBuffer, sizeof(tempBuffer), "%Y-%m-%d %H:%M:%f", RTULogData.timeinfo);
-    sprintf(RTULogData.timeBuffer, "%s.%03d",RTULogData.timeBuffer,millisec);
+    //time (&RTULogData.rawtime);
+    RTULogData.timeinfo = localtime (&RTULogData.tvl.tv_sec);
+    strftime(tempBuffer, sizeof(tempBuffer), "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
+    sprintf(RTULogData.timeBuffer, "%s.%03d",tempBuffer,millisec);
     
     // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
     //  cout << buffer << endl;
