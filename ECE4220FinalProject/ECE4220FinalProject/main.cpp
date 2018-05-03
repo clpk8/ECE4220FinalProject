@@ -49,25 +49,29 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 
 void sevenSeg(int decimal){
     //decimal to binary
-    
-    digitalWrite(DP, HIGH);
-    int a[4], i;
-    
-    for(i = 0; decimal > 0; i++){
-        a[i] = decimal % 2;
-        decimal = decimal / 2;
+
+    if(decimal < 8){
+        digitalWrite(DP, HIGH);
+        int a[4] = {0};
+        int i;
+        
+        for(i = 0; decimal > 0; i++){
+            a[i] = decimal % 2;
+            decimal = decimal / 2;
+        }
+        
+        for(i = 3; i>= 0; i--){
+            if(i == 3)
+                digitalWrite(D, a[i]);
+            else if(i == 2)
+                digitalWrite(C, a[i]);
+            else if(i == 1)
+                digitalWrite(B, a[i]);
+            else if(i == 0)
+                digitalWrite(A, a[i]);
+        }
     }
-    
-    for(i = i-1; i > 0; i--){
-        if(i == 3)
-            digitalWrite(D, a[3]);
-        else if(i == 2)
-            digitalWrite(C, a[2]);
-        else if(i == 1)
-            digitalWrite(B, a[1]);
-        else if(i == 0)
-            digitalWrite(A, a[0]);
-    }
+
 }
 enum typeEvent{
     S1OFF,
