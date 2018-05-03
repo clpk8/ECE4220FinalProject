@@ -23,7 +23,7 @@ int main()
     pinMode(D, OUTPUT);
     pinMode(DP, OUTPUT);
     
-    pinMode(DP, HIGH);
+    digitalWrite(DP, HIGH);
 
     
     digitalWrite(A,HIGH);
