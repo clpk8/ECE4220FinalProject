@@ -490,7 +490,8 @@ void *readingADC(void* ptr){
             i = 0;
         
         i++;
-        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[0] == adcArray[5] && adcArray[1]){
+        if(adcArray[0] == adcArray[2] && adcArray[0] == adcArray[3] && adcArray[0] == adcArray[4] && adcArray[1] == adcArray[0]){
+            cout << "111" << endl;
             r1.setTime();
             r1.setTypeEvent("Not power");
             r1.print();
@@ -498,6 +499,7 @@ void *readingADC(void* ptr){
         }
         else{
             if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
+                cout << "adc array is " << adcArray << endl;
                 r1.setTime();
                 r1.setTypeEvent("ADC volatege out of bound");
                 r1.print();
