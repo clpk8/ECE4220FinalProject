@@ -483,8 +483,6 @@ void *readingADC(void* ptr){
         ADCvalue = get_ADC(ADC_CHANNEL);
         r1.setVoltage(ADCvalue);
         
-        
-        i++;
         if(ADCvalue == PADCvalue && noPowerFlag == 0){
             r1.setTime();
             r1.setTypeEvent("Not power");
@@ -493,6 +491,7 @@ void *readingADC(void* ptr){
             noPowerFlag = 1;
         }
         else{
+            PADCvalue = ADCvalue;
             noPowerFlag = 0;
             if(ADCvalue > adcUpperBound || ADCvalue < adcLowerBound){
                 if(adcBoundFlag == 0){
