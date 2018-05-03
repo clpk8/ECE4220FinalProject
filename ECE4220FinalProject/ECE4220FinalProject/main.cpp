@@ -682,6 +682,7 @@ int main(int argc, const char * argv[]) {
             cout << "Readfile " << endl;
         }
         r1.setTime();
+        r1.clearTypeEvent();
         r1.print();
         r1.concatBuffer();
         s1.send(r1);
