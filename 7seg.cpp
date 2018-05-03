@@ -20,7 +20,7 @@ void sevenSeg(int decimal){
         decimal = decimal / 2;
     }
     
-    for(i = 3; i>0 0; i--){
+    for(i = 3; i>= 0; i--){
         if(i == 3)
             digitalWrite(D, a[i]);
         else if(i == 2)
