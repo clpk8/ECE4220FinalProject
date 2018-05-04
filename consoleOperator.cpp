@@ -114,6 +114,7 @@ int main(int argc, char* argv[]){
                 if(n < 0)
                     cout << "error" << endl;
         }
+        }
         
         
         else{
