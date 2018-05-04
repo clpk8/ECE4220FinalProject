@@ -20,7 +20,7 @@
 
 using namespace std;
 int main(int argc, char* argv[]){
-    char* signal;
+    char signal[MSG_SIZE];
     char buffer[MSG_SIZE];
     char* temp;
     int pipe_N_pipe2;
@@ -28,22 +28,25 @@ int main(int argc, char* argv[]){
         cout << "N_pipe2 error" << endl;
         exit(-1);
     }
-    
+
+//	cout << "1" << endl;    
     if(read(pipe_N_pipe2,&signal,sizeof(signal) != sizeof(signal)))
         cout << "N_pipe2 reading1 error\n" << endl;
     
     char delim[] = "|";
-    
+	cout << "1" << endl;	
+	cout << signal << endl;    
     int RTU1, RTU2, port;
     temp = strtok(signal,delim);
+	cout << temp << endl;
     RTU1 = atoi(temp);
-    
+  	cout << RTU1 << endl;  
     temp = strtok(NULL, delim);
     RTU2 = atoi(temp);
-    
+    	cout << RTU2 << endl;
     temp = strtok(NULL, delim);
     port = atoi(temp);
-    
+    	cout << port << endl;
     
     struct sockaddr_in anybody;    // for the socket configuration
     int sock, n;
