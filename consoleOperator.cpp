@@ -74,6 +74,7 @@ int main(int argc, char* argv[]){
     
     int choice;
     char ip[14];
+    char ch;
     do
     {
         cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
@@ -88,6 +89,8 @@ int main(int argc, char* argv[]){
             cout << "LED1 or LED2 " <<endl;
             fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cin >> buffer;
+            while((ch=getchar()) != '\n' && ch!=EOF);
+
             // send message to anyone there...
             n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
@@ -103,6 +106,7 @@ int main(int argc, char* argv[]){
             cout << "LED1 or LED2 " <<endl;
             //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cin >> buffer;
+            while((ch=getchar()) != '\n' && ch!=EOF);
             // send message to anyone there...
             n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
