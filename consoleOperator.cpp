@@ -72,50 +72,53 @@ int main(int argc, char* argv[]){
         exit(-1);
     }
     
-    int choice;
+    int choice = 0;
     char ip[14];
     char ch;
     do
     {
-        cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
-        cin >> choice;
         if(choice == 1){
-          //  while((ch=getchar()) != '\n' && ch!=EOF);
-            sprintf(ip, "128.206.19.%d",RTU1);
-            cout << "ip is " << ip << endl;
-            anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
-            // bzero: to "clean up" the buffer. The messages aren't always the same length.
-            bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
-            //cleanbuffer(&buffer);
-            cout << "LED1 or LED2" <<endl;
-           // fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
-            cin >> buffer;
-            
-
-            // send message to anyone there...
-            n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
-            if(n < 0)
-                cout << "error" << endl;
+            cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
+            cin >> choice;
+            if(choice == 1){
+                //  while((ch=getchar()) != '\n' && ch!=EOF);
+                sprintf(ip, "128.206.19.%d",RTU1);
+                cout << "ip is " << ip << endl;
+                anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
+                // bzero: to "clean up" the buffer. The messages aren't always the same length.
+                bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
+                //cleanbuffer(&buffer);
+                cout << "LED1 or LED2" <<endl;
+                // fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
+                cin >> buffer;
+                
+                
+                // send message to anyone there...
+                n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
+                if(n < 0)
+                    cout << "error" << endl;
+            }
+            else if(choice == 2){
+                //  while((ch=getchar()) != '\n' && ch!=EOF);
+                sprintf(ip, "128.206.19.%d",RTU2);
+                cout << "ip is " << ip << endl;
+                anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
+                // bzero: to "clean up" the buffer. The messages aren't always the same length.
+                bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
+                //cleanbuffer(&buffer);
+                cout << "LED1 or LED2" <<endl;
+                //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
+                cin >> buffer;
+                // send message to anyone there...
+                n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
+                if(n < 0)
+                    cout << "error" << endl;
         }
-        else if(choice == 2){
-          //  while((ch=getchar()) != '\n' && ch!=EOF);
-            sprintf(ip, "128.206.19.%d",RTU2);
-            cout << "ip is " << ip << endl;
-            anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
-            // bzero: to "clean up" the buffer. The messages aren't always the same length.
-            bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
-            //cleanbuffer(&buffer);
-            cout << "LED1 or LED2" <<endl;
-            //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
-            cin >> buffer;
-            // send message to anyone there...
-            n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
-            if(n < 0)
-                cout << "error" << endl;
-        }
+        
+        
         else{
             cout << "only 2 RTU connected!" << endl;
-            cin >> choice;
+            choice = 0;
         }
         
         
