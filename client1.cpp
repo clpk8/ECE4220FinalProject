@@ -147,8 +147,8 @@ void *receiving(void *ptr)
     int RTUID;
     int Switch1Status, Switch2Status, Button1Status, Button2Status;
     int Voltage;
-    char* EventOccuried;
-    char* TimeStamp;
+    string EventOccuried;
+    string TimeStamp;
     int PowerFlag;
     char *value;
     int Event;
@@ -252,7 +252,7 @@ void *receiving(void *ptr)
         cout << "Vector: " << ipID[1] << endl;
 
         
-        sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp,RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried);
+        sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values(%s,%d,%d,%d,%d,%d,%d,%s);",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
         
         cout << "1" << endl;
 
