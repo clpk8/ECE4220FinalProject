@@ -243,6 +243,7 @@ private:
     int myMachine;
     struct sockaddr_in server;
     struct sockaddr_in client;
+    struct sockaddr_in clientCommand;
     
     char buf[7];//test
     socklen_t fromlen;
@@ -255,7 +256,7 @@ public:
     string receiveFrom();
 };
 string socketObj::receiveFrom(){
-    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&client, &fromlen);
+    n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&clientCommand, &fromlen);
     if(n < 0)
         cout << "Receive error " << endl;
     
