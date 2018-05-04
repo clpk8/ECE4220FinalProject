@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
                 printf("N_pipe2 writing error\n");
                 exit(-1);
             }
+            syncFlag++;
             
         }
     }
