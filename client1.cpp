@@ -257,7 +257,7 @@ void *receiving(void *ptr)
         cout << "2" << endl;
 
         if( rc != SQLITE_OK ){
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error: %s\n", &zErrMsg);
             sqlite3_free(zErrMsg);
         }else{
             fprintf(stdout, "Records created successfully\n");
