@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
     
+    cout << "Signal sended is " << signal << endl;
     if(write(pipe_N_pipe2,&signal,sizeof(signal)) != sizeof(signal)){
         printf("N_pipe2 writing error\n");
         exit(-1);
