@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     sem_wait(&semaphore);
     while(1){
         if(syncFlag == 2){
-            //sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
+            sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
             int dummy = system("mkfifo N_pipe2");
             int pipe_N_pipe2;
 		cout << "signal is " << signal << endl;
