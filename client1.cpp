@@ -252,7 +252,7 @@ void *receiving(void *ptr)
         cout << "Vector: " << ipID[1] << endl;
 
         
-        sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values(%s,%d,%d,%d,%d,%d,%d,%s);",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
+        asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
         
         cout << "1" << endl;
 
