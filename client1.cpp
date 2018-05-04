@@ -242,8 +242,6 @@ void *receiving(void *ptr)
         cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
         cout << "Vector: " << ipID[i++] << endl;
         
-        insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('2018-05-02 21:24:32', 20, 0,0,0,0,100, 'Test');
-        
         sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp,RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried);
         
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
