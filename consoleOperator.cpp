@@ -77,7 +77,7 @@ int main(int argc, char* argv[]){
     char ch;
     do
     {
-        if(choice == 1){
+        if(choice == 0){
             cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
             cin >> choice;
             if(choice == 1){
