@@ -87,7 +87,7 @@ int main(int argc, char* argv[]){
             // bzero: to "clean up" the buffer. The messages aren't always the same length.
             bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
             //cleanbuffer(&buffer);
-            cout << "led1 or led2 (NOT CAPITALIZED!!)" <<endl;
+            cout << "LED1 or LED2" <<endl;
            // fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cin >> buffer;
             
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]){
             // bzero: to "clean up" the buffer. The messages aren't always the same length.
             bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
             //cleanbuffer(&buffer);
-              cout << "led1 or led2 (NOT CAPITALIZED!!)" <<endl;
+            cout << "LED1 or LED2" <<endl;
             //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cin >> buffer;
             // send message to anyone there...

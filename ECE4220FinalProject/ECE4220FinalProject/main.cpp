@@ -351,8 +351,8 @@ void *turnLEDS(void* ptr){
     while(1){
         string command = s1.receiveFrom();
         //   cout << "Command is "<< command;
-        string led1("LED1\n");
-        string led2("LED2\n");
+        string led1("LED1");
+        string led2("LED2");
         
         if(command.compare(led1) == 0 ){
             if(LED1Flag == 0){
