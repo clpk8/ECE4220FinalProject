@@ -24,32 +24,32 @@ int main(int argc, char* argv[]){
     char buffer[MSG_SIZE];
     char* temp;
     int dummy = system("mkfifo N_pipe2");
-
+    
     int pipe_N_pipe2;
     if((pipe_N_pipe2 = open("N_pipe2",O_RDONLY)) < 0){
         cout << "N_pipe2 error" << endl;
         exit(-1);
     }
-
-//	cout << "1" << endl;    
+    
+    //	cout << "1" << endl;
     if(read(pipe_N_pipe2,&signal,sizeof(signal)) < 0)
         cout << "N_pipe2 reading1 error\n" << endl;
-
+    
     cout << "Signal is:" << signal<<endl;
     char delim[] = "|";
-	cout << "1" << endl;	
-	cout << signal << endl;    
+    cout << "1" << endl;
+    cout << signal << endl;
     int RTU1, RTU2, port;
     temp = strtok(signal,delim);
-	cout << temp << endl;
+    cout << temp << endl;
     RTU1 = atoi(temp);
-  	cout << RTU1 << endl;  
+    cout << RTU1 << endl;
     temp = strtok(NULL, delim);
     RTU2 = atoi(temp);
-    	cout << RTU2 << endl;
+    cout << RTU2 << endl;
     temp = strtok(NULL, delim);
     port = atoi(temp);
-    	cout << port << endl;
+    cout << port << endl;
     
     struct sockaddr_in anybody;    // for the socket configuration
     int sock, n;
@@ -79,6 +79,7 @@ int main(int argc, char* argv[]){
     {
         if(choice == 0){
             cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
+            while((ch=getchar()) != '\n' && ch!=EOF);
             cin >> choice;
             if(choice == 1){
                 //  while((ch=getchar()) != '\n' && ch!=EOF);
@@ -113,7 +114,7 @@ int main(int argc, char* argv[]){
                 n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
                 if(n < 0)
                     cout << "error" << endl;
-        }
+            }
         }
         
         
