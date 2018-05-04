@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Opened database successfully\n");
     }
     
-    char signal[MSG_SIZE] = "2018-05-02 21:24:32|29|0|0|0|0|0|0|";
+    char signal[MSG_SIZE] = "Start";
     int sock, n;
     //  unsigned int length = sizeof(struct sockaddr_in);    // size of structure
     //    char buffer[MSG_SIZE];        // to store received messages or messages to be sent.
@@ -180,98 +180,100 @@ void *receiving(void *ptr)
         
         //cout << "This was received: " << buffer << endl;
         //printf("This was received: %s\n", buffer);
-        
-        value = strtok(buffer, delim);
-        TimeStamp = value;
-        
-        value = strtok(NULL, delim);
-        RTUID = atoi(value);
-        
-        value = strtok(NULL, delim);
-        Switch1Status = atoi(value);
-        
-        value = strtok(NULL, delim);
-        Switch2Status = atoi(value);
-        
-        value = strtok(NULL, delim);
-        Button1Status = atoi(value);
-        
-        value = strtok(NULL, delim);
-        Button2Status = atoi(value);
-        
-        value = strtok(NULL, delim);
-        Voltage = atoi(value);
-        
-        
-        value = strtok(NULL, delim);
-        Event = atoi(value);
-        
-        
-        
-        if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
-            ipID.push_back(RTUID);
-            sem_post(&semaphore);
-            cout << "1" << endl;
-            syncFlag++;
+        if(strcmp(buffer,"Start") != 0){
+            value = strtok(buffer, delim);
+            TimeStamp = value;
+            
+            value = strtok(NULL, delim);
+            RTUID = atoi(value);
+            
+            value = strtok(NULL, delim);
+            Switch1Status = atoi(value);
+            
+            value = strtok(NULL, delim);
+            Switch2Status = atoi(value);
+            
+            value = strtok(NULL, delim);
+            Button1Status = atoi(value);
+            
+            value = strtok(NULL, delim);
+            Button2Status = atoi(value);
+            
+            value = strtok(NULL, delim);
+            Voltage = atoi(value);
+            
+            
+            value = strtok(NULL, delim);
+            Event = atoi(value);
+            
+            
+            
+            if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
+                ipID.push_back(RTUID);
+                sem_post(&semaphore);
+                cout << "1" << endl;
+                syncFlag++;
+            }
+            
+            
+            
+            //        cout << Event << endl << endl;
+            
+            switch(Event)
+            {
+                case 0: EventOccuried = "S10FF";
+                    break;
+                case 1: EventOccuried = "S1ON";
+                    break;
+                case 2: EventOccuried = "S2OFF";
+                    break;
+                case 3: EventOccuried = "S2ON";
+                    break;
+                case 4: EventOccuried = "B1OFF";
+                    break;
+                case 5: EventOccuried = "B1ON";
+                    break;
+                case 6: EventOccuried = "B2OFF";
+                    break;
+                case 7: EventOccuried = "B2ON";
+                    break;
+                case 8: EventOccuried = "ADCBOUND";
+                    break;
+                case 9: EventOccuried = "ADCPOWER";
+                    break;
+                case 10: EventOccuried = "LED1ON";
+                    break;
+                case 11: EventOccuried = "LED1OFF";
+                    break;
+                case 12: EventOccuried = "LED2ON";
+                    break;
+                case 13: EventOccuried = "LED2OFF";
+                    break;
+                case 14: EventOccuried = "REGULAR";
+                    break;
+            }
+            
+            //value = strtok(NULL, delim);
+            //PowerFlag = atoi(value);
+            
+            cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
+            cout << "Vector: " << ipID[0] << endl;
+            cout << "Vector: " << ipID[1] << endl;
+            
+            
+            asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
+            
+            rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+            
+            if( rc != SQLITE_OK ){
+                fprintf(stderr, "SQL error: %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            }else{
+                fprintf(stdout, "Records created successfully\n");
+            }
+            
         }
-        
-        
-        
-        //        cout << Event << endl << endl;
-        
-        switch(Event)
-        {
-            case 0: EventOccuried = "S10FF";
-                break;
-            case 1: EventOccuried = "S1ON";
-                break;
-            case 2: EventOccuried = "S2OFF";
-                break;
-            case 3: EventOccuried = "S2ON";
-                break;
-            case 4: EventOccuried = "B1OFF";
-                break;
-            case 5: EventOccuried = "B1ON";
-                break;
-            case 6: EventOccuried = "B2OFF";
-                break;
-            case 7: EventOccuried = "B2ON";
-                break;
-            case 8: EventOccuried = "ADCBOUND";
-                break;
-            case 9: EventOccuried = "ADCPOWER";
-                break;
-            case 10: EventOccuried = "LED1ON";
-                break;
-            case 11: EventOccuried = "LED1OFF";
-                break;
-            case 12: EventOccuried = "LED2ON";
-                break;
-            case 13: EventOccuried = "LED2OFF";
-                break;
-            case 14: EventOccuried = "REGULAR";
-                break;
-        }
-        
-        //value = strtok(NULL, delim);
-        //PowerFlag = atoi(value);
-        
-        cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
-        cout << "Vector: " << ipID[0] << endl;
-        cout << "Vector: " << ipID[1] << endl;
-        
-        
-        asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
-        
-        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
-        
-        if( rc != SQLITE_OK ){
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
-        }else{
-            fprintf(stdout, "Records created successfully\n");
-        }
-        
+     
     }
     
     pthread_exit(0);
