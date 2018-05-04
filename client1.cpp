@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
     
     anybody.sin_addr.s_addr = inet_addr("128.206.19.255");    // broadcast address (Lab)
     
-    pthread_create(&thread_rec, NULL, receiving, (void *)&sock);    // for receiving
     
     cout << "This programs displays whatever it receives." << endl;
     cout << "It also transmits whatever the user types, max. 40 char. (! to exit):" << endl;
@@ -119,7 +118,8 @@ int main(int argc, char *argv[])
     n = sendto(sock, signal, strlen(signal), 0, (const struct sockaddr *)&anybody, length);
     if(n < 0)
         error("Error: sendto");
-    
+    pthread_create(&thread_rec, NULL, receiving, (void *)&sock);    // for receiving
+
     
     sem_wait(&semaphore);
     while(1){
