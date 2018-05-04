@@ -23,6 +23,8 @@ int main(int argc, char* argv[]){
     char signal[MSG_SIZE];
     char buffer[MSG_SIZE];
     char* temp;
+    int dummy = system("mkfifo N_pipe2");
+
     int pipe_N_pipe2;
     if((pipe_N_pipe2 = open("N_pipe2",O_RDONLY)) < 0){
         cout << "N_pipe2 error" << endl;
@@ -71,17 +73,19 @@ int main(int argc, char* argv[]){
     }
     
     int choice;
-    char* ip;
+    char ip[14];
     do
     {
         cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
         cin >> choice;
         if(choice == 1){
             sprintf(ip, "128.206.19.%d",RTU1);
-            anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
+            cout << "ip is " << ip << endl;
+            anybody.sin_addr.s_addr = inet_addr("128.206.19.27");    // broadcast address (Lab)
         }
         else if(choice == 2){
             sprintf(ip, "128.206.19.%d",RTU2);
+            cout << "ip is " << ip << endl;
             anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
         }
         
