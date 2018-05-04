@@ -93,7 +93,7 @@ int main(int argc, char* argv[]){
             
 
             // send message to anyone there...
-            n = sendto(sock, buffer, strlen(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
+            n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
                 cout << "error" << endl;
         }
@@ -109,9 +109,12 @@ int main(int argc, char* argv[]){
             //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cin >> buffer;
             // send message to anyone there...
-            n = sendto(sock, buffer, strlen(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
+            n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
                 cout << "error" << endl;
+        }
+        else{
+            cout << "only 2 RTU connected!" << endl;
         }
         
         
