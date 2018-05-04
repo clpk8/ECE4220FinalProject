@@ -203,7 +203,6 @@ void *receiving(void *ptr)
         }
 
         
-        cout << "2" << endl;
 
         //        cout << Event << endl << endl;
         
@@ -248,8 +247,11 @@ void *receiving(void *ptr)
         cout << "Vector: " << ipID[i++] << endl;
         
         sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
-        
+        cout << "1" << endl;
+
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+        cout << "2" << endl;
+
         if( rc != SQLITE_OK ){
             fprintf(stderr, "SQL error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
