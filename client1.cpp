@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     sem_wait(&semaphore);
     while(1){
         if(syncFlag == 2){
-            sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
+            //sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
             int dummy = system("mkfifo N_pipe2");
             int pipe_N_pipe2;
             if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
             }
             
             cout << "Signal sended is " << signal << endl;
-            if(write(pipe_N_pipe2,&signal,sizeof(signal)) != sizeof(signal)){
+            if(write(pipe_N_pipe2,&signal,MSG_SIZE) != MSG_SIZE){
                 printf("N_pipe2 writing error\n");
                 exit(-1);
             }
