@@ -254,8 +254,8 @@ void *receiving(void *ptr)
         cout << "1" << endl;
 
         cout << "sql is :" << sql << endl;
-        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
         cout << "2" << endl;
+        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
 
         if( rc != SQLITE_OK ){
             fprintf(stderr, "SQL error: %s\n", zErrMsg);
