@@ -30,9 +30,10 @@ int main(int argc, char* argv[]){
     }
 
 //	cout << "1" << endl;    
-    if(read(pipe_N_pipe2,&signal,sizeof(MSG_SIZE)) < 0)
+    if(read(pipe_N_pipe2,&signal,sizeof(signal)) < 0)
         cout << "N_pipe2 reading1 error\n" << endl;
-    
+
+    cout << "Signal is:" << signal<<endl;
     char delim[] = "|";
 	cout << "1" << endl;	
 	cout << signal << endl;    
