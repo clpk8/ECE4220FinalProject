@@ -54,7 +54,7 @@ void *receiving(void *ptr);
 
 int main(int argc, char *argv[])
 {
-    sem_init(&semaphore, 0, -1);
+    sem_init(&semaphore, 0, -2);
     
     
     
@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
     
     
     sem_wait(&semaphore);
+<<<<<<< HEAD
     if(syncFlag == 2){
         
         sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
@@ -139,6 +140,26 @@ int main(int argc, char *argv[])
         }
         
     }
+=======
+  //  if(syncFlag == 2){
+    
+    sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
+	cout << "Signal is "<<signal << endl;
+    int dummy = system("mkfifo N_pipe2");
+    int pipe_N_pipe2;
+    if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
+        printf("N_pipe2 error");
+        exit(-1);
+    }
+    
+    cout << "Signal sended is " << signal << endl;
+    if(write(pipe_N_pipe2,&signal,sizeof(signal)) != sizeof(signal)){
+        printf("N_pipe2 writing error\n");
+        exit(-1);
+    }
+
+//}
+>>>>>>> d0021e82299b975f90f8f9d94f67f477930923af
     
     
     //close(sock);            // close socket.
