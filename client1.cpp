@@ -156,7 +156,6 @@ void *receiving(void *ptr)
     
     struct sockaddr_in from;
     
-    cout << "1" << endl;
     while(1)
     {
         bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
@@ -195,13 +194,17 @@ void *receiving(void *ptr)
         value = strtok(NULL, delim);
         Event = atoi(value);
         
+        cout << "1" << endl;
+
+        
         if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
             ipID.push_back(RTUID);
             sem_post(&semaphore);
         }
-        cout << "2" << endl;
 
         
+        cout << "2" << endl;
+
         //        cout << Event << endl << endl;
         
         switch(Event)
