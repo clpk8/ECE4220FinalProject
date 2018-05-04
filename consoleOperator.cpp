@@ -115,6 +115,7 @@ int main(int argc, char* argv[]){
         }
         else{
             cout << "only 2 RTU connected!" << endl;
+            cin >> choice;
         }
         
         
