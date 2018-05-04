@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     
     /* Open database */
-    rc = sqlite3_open("SCADA.db", &db);
+    rc = sqlite3_open("SCADA", &db);
     if( rc ){
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
         exit(0);
