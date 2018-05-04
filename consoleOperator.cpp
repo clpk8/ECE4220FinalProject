@@ -81,19 +81,26 @@ int main(int argc, char* argv[]){
         if(choice == 1){
             sprintf(ip, "128.206.19.%d",RTU1);
             cout << "ip is " << ip << endl;
-            anybody.sin_addr.s_addr = inet_addr("128.206.19.27");    // broadcast address (Lab)
+            anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
+            // bzero: to "clean up" the buffer. The messages aren't always the same length.
+            bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
+            //cleanbuffer(&buffer);
+            cout << "LED1 or LED2 " <<endl;
+            fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
+            cout<< "Please enter " << endl;
+            // send message to anyone there...
+            n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
+            if(n < 0)
+                cout << "error" << endl;
         }
         else if(choice == 2){
             sprintf(ip, "128.206.19.%d",RTU2);
             cout << "ip is " << ip << endl;
             anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
-        }
-        
-        if(choice != '!')
-        {
             // bzero: to "clean up" the buffer. The messages aren't always the same length.
             bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
             //cleanbuffer(&buffer);
+            cout << "LED1 or LED2 " <<endl;
             fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
             cout<< "Please enter " << endl;
             // send message to anyone there...
@@ -104,7 +111,6 @@ int main(int argc, char* argv[]){
         
         
         
-        
-    } while(signal[0] != '!');
+    } while(choice != '!');
     
 }
