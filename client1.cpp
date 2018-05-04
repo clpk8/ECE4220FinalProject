@@ -28,7 +28,7 @@ sqlite3 *db;
 char *zErrMsg = 0;
 int rc;
 char *sql;
-int syncFlag == 0;
+int syncFlag = 0;
 
 void error(const char *msg)
 {
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     
     sem_wait(&semaphore);
     if(syncFlag == 2){
-    }
+    
     sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
     int dummy = system("mkfifo N_pipe2");
     int pipe_N_pipe2;
@@ -137,8 +137,8 @@ int main(int argc, char *argv[])
         printf("N_pipe2 writing error\n");
         exit(-1);
     }
-}
 
+}
     
     
     //close(sock);            // close socket.
