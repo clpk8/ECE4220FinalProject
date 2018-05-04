@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
     char* ip;
     do
     {
-        cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << "2 for ID: " << RTU2 << endl;
+        cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
         cin >> choice;
         if(choice == 1){
             sprintf(ip, "128.206.19.%d",RTU1);
