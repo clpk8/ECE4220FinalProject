@@ -117,9 +117,9 @@ int main(int argc, char *argv[])
     
     
     sem_wait(&semaphore);
-    sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
+    sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
     int dummy = system("mkfifo N_pipe2");
-    
+    int pipe_N_pipe2;
     if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
         printf("N_pipe2 error");
         exit(-1);
@@ -244,7 +244,7 @@ void *receiving(void *ptr)
         
         insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('2018-05-02 21:24:32', 20, 0,0,0,0,100, 'Test');
         
-        sprintf(sql, "insert into insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp,RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried);
+        sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp,RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried);
         
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
         if( rc != SQLITE_OK ){
