@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 {
     sem_init(&semaphore, 0, -1);
     
-
+    
     
     /* Open database */
     rc = sqlite3_open("SCADA", &db);
@@ -123,22 +123,22 @@ int main(int argc, char *argv[])
     
     sem_wait(&semaphore);
     if(syncFlag == 2){
-    
-    sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
-    int dummy = system("mkfifo N_pipe2");
-    int pipe_N_pipe2;
-    if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
-        printf("N_pipe2 error");
-        exit(-1);
+        
+        sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
+        int dummy = system("mkfifo N_pipe2");
+        int pipe_N_pipe2;
+        if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
+            printf("N_pipe2 error");
+            exit(-1);
+        }
+        
+        cout << "Signal sended is " << signal << endl;
+        if(write(pipe_N_pipe2,&signal,sizeof(signal)) != sizeof(signal)){
+            printf("N_pipe2 writing error\n");
+            exit(-1);
+        }
+        
     }
-    
-    cout << "Signal sended is " << signal << endl;
-    if(write(pipe_N_pipe2,&signal,sizeof(signal)) != sizeof(signal)){
-        printf("N_pipe2 writing error\n");
-        exit(-1);
-    }
-
-}
     
     
     //close(sock);            // close socket.
@@ -204,7 +204,7 @@ void *receiving(void *ptr)
         value = strtok(NULL, delim);
         Event = atoi(value);
         
-
+        
         
         if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
             ipID.push_back(RTUID);
@@ -212,9 +212,9 @@ void *receiving(void *ptr)
             cout << "1" << endl;
             syncFlag++;
         }
-
         
-
+        
+        
         //        cout << Event << endl << endl;
         
         switch(Event)
@@ -257,12 +257,12 @@ void *receiving(void *ptr)
         cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
         cout << "Vector: " << ipID[0] << endl;
         cout << "Vector: " << ipID[1] << endl;
-
+        
         
         asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
         
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
-
+        
         if( rc != SQLITE_OK ){
             fprintf(stderr, "SQL error: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
