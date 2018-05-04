@@ -127,6 +127,7 @@ int main(int argc, char *argv[])
             //sprintf(signal,"%d|%d|%d|",ipID[0],ipID[1],atoi(argv[1]));
             int dummy = system("mkfifo N_pipe2");
             int pipe_N_pipe2;
+		cout << "signal is " << signal << endl;
             if((pipe_N_pipe2 = open("N_pipe2",O_WRONLY)) < 0){
                 printf("N_pipe2 error");
                 exit(-1);
