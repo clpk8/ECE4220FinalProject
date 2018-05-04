@@ -253,7 +253,7 @@ void *receiving(void *ptr)
         sprintf(sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
         cout << "1" << endl;
 
-        cout << sql << endl;
+        cout << "sql is :" << sql << endl;
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
         cout << "2" << endl;
 
