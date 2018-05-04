@@ -87,7 +87,7 @@ int main(int argc, char* argv[]){
             //cleanbuffer(&buffer);
             cout << "LED1 or LED2 " <<endl;
             fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
-            cout<< "Please enter " << endl;
+            cin >> buffer;
             // send message to anyone there...
             n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
@@ -101,8 +101,8 @@ int main(int argc, char* argv[]){
             bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
             //cleanbuffer(&buffer);
             cout << "LED1 or LED2 " <<endl;
-            fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
-            cout<< "Please enter " << endl;
+            //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
+            cin >> buffer;
             // send message to anyone there...
             n = sendto(sock, buffer, strlen(buffer), 0, (const struct sockaddr *)&anybody, length);
             if(n < 0)
