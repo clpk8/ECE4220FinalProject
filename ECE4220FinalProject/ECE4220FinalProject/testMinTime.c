@@ -123,7 +123,7 @@ void *set2()
 
     //set initial time and interval time
     itval.it_interval.tv_sec = 0;
-    itval.it_interval.tv_nsec =7000000;
+    itval.it_interval.tv_nsec =8000000;
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = 300000;
 
