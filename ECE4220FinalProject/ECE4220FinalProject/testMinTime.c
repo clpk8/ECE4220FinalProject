@@ -76,10 +76,10 @@ void *set1()
             exit(-1);
         }
         if(i%2 == 0){
-            digitalWrite(LED2,HIGH);
+            digitalWrite(LED2,LOW);
         }
         else{
-            digitalWrite(LED2,LOW);
+            digitalWrite(LED2,HIGH);
             
         }
 
@@ -156,10 +156,10 @@ void *set2()
             exit(-1);
         }
         if(i%2 == 0){
-            digitalWrite(LED2,HIGH);
+            digitalWrite(LED2,LOW);
         }
         else{
-            digitalWrite(LED2,LOW);
+            digitalWrite(LED2,HIGH);
             
         }
         //check missed windows
@@ -185,8 +185,8 @@ int main (void)
     pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
 
-    digitalWrite(LED1,LOW);
-    digitalWrite(LED2,LOW);
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,HIGH);
 
 
     int i;
