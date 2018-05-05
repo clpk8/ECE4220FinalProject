@@ -67,7 +67,7 @@ void *set1()
 
     int i;
     //read sentences
-    for(i = 0; i < 1; i++)
+    for(i = 0; i < 10; i++)
     {
         digitalWrite(LED1,HIGH);
         //read up to count bytes from file descriptor into the buffer
@@ -142,7 +142,7 @@ void *set2()
 
     int i;
     //read sentences
-    for(i = 0; i < 1; i++)
+    for(i = 0; i < 10; i++)
     {
         digitalWrite(LED2,HIGH);
         //read up to count bytes from file descriptor into the buffer
