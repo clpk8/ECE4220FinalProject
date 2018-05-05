@@ -504,6 +504,7 @@ void S2Interrupt() {
     
 }
 
+
 void *readingADC(void* ptr){
     uint16_t ADCvalue;
     uint16_t PADCvalue = 0;
