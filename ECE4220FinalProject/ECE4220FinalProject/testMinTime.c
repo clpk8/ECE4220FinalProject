@@ -76,10 +76,10 @@ void *set1()
             exit(-1);
         }
         if(i%2 == 0){
-            digitalWrite(LED2,LOW);
+            digitalWrite(LED1,LOW);
         }
         else{
-            digitalWrite(LED2,HIGH);
+            digitalWrite(LED1,HIGH);
             
         }
 
