@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
     anybody.sin_addr.s_addr = inet_addr("128.206.19.255");    // broadcast address (Lab)
     
     
-    cout << "This programs displays whatever it receives." << endl;
-    cout << "It also transmits whatever the user types, max. 40 char. (! to exit):" << endl;
+   // cout << "This programs displays whatever it receives." << endl;
+   // cout << "It also transmits whatever the user types, max. 40 char. (! to exit):" << endl;
     
     
     n = sendto(sock, signal, strlen(signal), 0, (const struct sockaddr *)&anybody, length);
@@ -211,7 +211,6 @@ void *receiving(void *ptr)
             if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
                 ipID.push_back(RTUID);
                 sem_post(&semaphore);
-                cout << "1" << endl;
                 syncFlag++;
             }
             
@@ -256,9 +255,9 @@ void *receiving(void *ptr)
             //value = strtok(NULL, delim);
             //PowerFlag = atoi(value);
             
-            cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
-            cout << "Vector: " << ipID[0] << endl;
-            cout << "Vector: " << ipID[1] << endl;
+        //    cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
+        //    cout << "Vector: " << ipID[0] << endl;
+        //    cout << "Vector: " << ipID[1] << endl;
             
             
             asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());

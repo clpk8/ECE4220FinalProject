@@ -37,19 +37,19 @@ int main(int argc, char* argv[]){
     
     cout << "Signal is:" << signal<<endl;
     char delim[] = "|";
-    cout << "1" << endl;
-    cout << signal << endl;
+   // cout << "1" << endl;
+    //cout << signal << endl;
     int RTU1, RTU2, port;
     temp = strtok(signal,delim);
-    cout << temp << endl;
+   // cout << temp << endl;
     RTU1 = atoi(temp);
-    cout << RTU1 << endl;
+   // cout << RTU1 << endl;
     temp = strtok(NULL, delim);
     RTU2 = atoi(temp);
-    cout << RTU2 << endl;
+  //  cout << RTU2 << endl;
     temp = strtok(NULL, delim);
     port = atoi(temp);
-    cout << port << endl;
+  //  cout << port << endl;
     
     struct sockaddr_in anybody;    // for the socket configuration
     int sock, n;
