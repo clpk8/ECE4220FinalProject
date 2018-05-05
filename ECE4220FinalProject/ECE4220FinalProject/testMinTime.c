@@ -64,8 +64,10 @@ void *set1()
         exit(-1);
     }
 
+
+    int i;
     //read sentences
-    for(int i = 0; i < 1; i++)
+    for(i = 0; i < 1; i++)
     {
         digitalWrite(BTN1,HIGH);
         //read up to count bytes from file descriptor into the buffer
@@ -138,8 +140,9 @@ void *set2()
         exit(-1);
     }
 
+    int i;
     //read sentences
-    for(int i = 0; i < 1; i++)
+    for(i = 0; i < 1; i++)
     {
         digitalWrite(BTN2,HIGH);
         //read up to count bytes from file descriptor into the buffer
