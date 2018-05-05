@@ -69,15 +69,19 @@ void *set1()
     //read sentences
     for(i = 0; i < 10; i++)
     {
-        digitalWrite(LED1,HIGH);
         //read up to count bytes from file descriptor into the buffer
         if(read(timer_fd, &num_periods, sizeof(num_periods))<0)
         {
             printf("Error!\n");
             exit(-1);
         }
-        digitalWrite(LED1,LOW);
-
+        if(i%2 == 0){
+            digitalWrite(LED2,HIGH);
+        }
+        else{
+            digitalWrite(LED2,LOW);
+            
+        }
 
         //check missed windows
         if(num_periods > 1)
@@ -144,15 +148,20 @@ void *set2()
     //read sentences
     for(i = 0; i < 10; i++)
     {
-        digitalWrite(LED2,HIGH);
+
         //read up to count bytes from file descriptor into the buffer
         if(read(timer_fd, &num_periods, sizeof(num_periods))<0)
         {
             printf("Error!\n");
             exit(-1);
         }
-
-        digitalWrite(LED2,LOW);
+        if(i%2 == 0){
+            digitalWrite(LED2,HIGH);
+        }
+        else{
+            digitalWrite(LED2,LOW);
+            
+        }
         //check missed windows
         if(num_periods > 1)
         {
