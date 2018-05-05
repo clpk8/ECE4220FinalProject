@@ -42,7 +42,7 @@ void *set1()
 
     //set initial time and interval time
     itval.it_interval.tv_sec = 0;
-    itval.it_interval.tv_nsec =40000000;
+    itval.it_interval.tv_nsec =400000000;
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = 300000;
 
@@ -121,7 +121,7 @@ void *set2()
 
     //set initial time and interval time
     itval.it_interval.tv_sec = 0;
-    itval.it_interval.tv_nsec =30000000;
+    itval.it_interval.tv_nsec =300000000;
     itval.it_value.tv_sec = 0;
     itval.it_value.tv_nsec = 300000;
 
