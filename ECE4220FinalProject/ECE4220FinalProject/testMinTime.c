@@ -67,7 +67,7 @@ void *set1()
 
     int i;
     //read sentences
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 1000; i++)
     {
         //read up to count bytes from file descriptor into the buffer
         if(read(timer_fd, &num_periods, sizeof(num_periods))<0)
@@ -146,7 +146,7 @@ void *set2()
 
     int i;
     //read sentences
-    for(i = 0; i < 10; i++)
+    for(i = 0; i < 1000; i++)
     {
 
         //read up to count bytes from file descriptor into the buffer
