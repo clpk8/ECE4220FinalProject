@@ -167,7 +167,7 @@ int main (void)
 
     if (wiringPiSetup () < 0) {
         // fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
-        cerr<< "Not able to setup wiringpi"<<endl;
+        printf("Error\n");
         return -1;
     }
     pinMode(BTN1, INPUT);
