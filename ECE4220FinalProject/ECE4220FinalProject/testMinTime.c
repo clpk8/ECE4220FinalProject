@@ -173,11 +173,11 @@ int main (void)
         printf("Error\n");
         return -1;
     }
+    pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
-    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
 
-    digitalWrite(BTN1,LOW);
-    digitalWrite(BTN2,LOW);
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
 
 
     int i;
