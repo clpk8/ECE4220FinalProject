@@ -10,8 +10,8 @@
 #include <pthread.h>
 #include <wiringPi.h>
 #define MY_PRIORITY 51  // kernel is priority 50
-#define BTN1  27 //BTN
-#define BTN2  0
+#define LED1  8        // wiringPi number corresponding to GPIO2.
+#define LED2  9 //yellow
 
 
 void *set1()
@@ -69,14 +69,14 @@ void *set1()
     //read sentences
     for(i = 0; i < 1; i++)
     {
-        digitalWrite(BTN1,HIGH);
+        digitalWrite(LED1,HIGH);
         //read up to count bytes from file descriptor into the buffer
         if(read(timer_fd, &num_periods, sizeof(num_periods))<0)
         {
             printf("Error!\n");
             exit(-1);
         }
-        digitalWrite(BTN1,LOW);
+        digitalWrite(LED1,LOW);
 
 
         //check missed windows
@@ -144,7 +144,7 @@ void *set2()
     //read sentences
     for(i = 0; i < 1; i++)
     {
-        digitalWrite(BTN2,HIGH);
+        digitalWrite(LED2,HIGH);
         //read up to count bytes from file descriptor into the buffer
         if(read(timer_fd, &num_periods, sizeof(num_periods))<0)
         {
@@ -152,7 +152,7 @@ void *set2()
             exit(-1);
         }
 
-        digitalWrite(BTN2,LOW);
+        digitalWrite(LED2,LOW);
         //check missed windows
         if(num_periods > 1)
         {
@@ -173,8 +173,8 @@ int main (void)
         printf("Error\n");
         return -1;
     }
-    pinMode(BTN1, INPUT);
-    pinMode(BTN2, INPUT);
+    pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
+    pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
 
     digitalWrite(BTN1,LOW);
     digitalWrite(BTN2,LOW);

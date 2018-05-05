@@ -612,6 +612,7 @@ int setupWiringPiFunction() {
         cerr<< "Not able to setup wiringpi"<<endl;
         return -1;
     }
+    
     pinMode(LED1, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
     pinMode(LED2, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
     pinMode(LED3, OUTPUT);    // Configure GPIO2, which is the one connected to the LED.
