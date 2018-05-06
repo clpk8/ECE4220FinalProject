@@ -18,26 +18,32 @@
 #include <pthread.h>
 #include <math.h>
 
+
 using namespace std;
-#define LED1  8        // wiringPi number corresponding to GPIO2.
+
+// wiringPi number corresponding to GPIO2.
+#define LED1  8//red
 #define LED2  9 //yellow
 #define LED3  7 //green
 #define LED4  21 // blue
-#define BTN1  27 //BTN
-#define BTN2  0
+#define BTN1  27 //BTN1
+#define BTN2  0 //BTN2
 #define SW1   26
 #define SW2   23
-#define MSG_SIZE 40            // message size
+//define for 7-seg display
 #define A 5
 #define B 6
 #define C 25
 #define D 2
 #define DP 29
 
-int portNum;
+
+int portNum;//store the argument value
+//flags used to indicate the status of LEDs
 int LED1Flag;
 int LED2Flag;
 //----------------Time used for rebounce ------------------
+//push button might triger many time because of pressure
 struct timeval interruptTimeB1, lastInterruptTimeB1;
 struct timeval interruptTimeB2, lastInterruptTimeB2;
 
@@ -46,20 +52,20 @@ struct timeval interruptTimeB2, lastInterruptTimeB2;
 #define SPI_SPEED     2000000    // Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       3    // Between 0 and 3
 
-
+//simple seven segment display program
 void sevenSeg(int decimal){
-    //decimal to binary
-
+    //We've only used the seven segment display for the status of buttons and switches
     if(decimal < 8){
+        
+        //decimal to binary
         digitalWrite(DP, HIGH);
         int a[4] = {0};
         int i;
-        
         for(i = 0; decimal > 0; i++){
             a[i] = decimal % 2;
             decimal = decimal / 2;
         }
-        
+        //MSB first LSB last
         for(i = 3; i>= 0; i--){
             if(i == 3)
                 digitalWrite(D, a[i]);
@@ -71,8 +77,10 @@ void sevenSeg(int decimal){
                 digitalWrite(A, a[i]);
         }
     }
-
 }
+
+//Enums used for tracking event
+//can be seeing as "EVENT ID" from 0 to 14
 enum typeEvent{
     S1OFF,
     S1ON,
@@ -82,21 +90,25 @@ enum typeEvent{
     B1ON,
     B2OFF,
     B2ON,
-    ADCBOUND,
-    ADCPOWER,
+    ADCBOUND,//ADC out of bound
+    ADCPOWER,//ADC no power
     LED1ON,
     LED1OFF,
     LED2ON,
     LED2OFF,
-    REGULAR
+    REGULAR//Regultory 1 second update
 };
 
+//structure created to store all the information needed to be logged
 struct LogData
 {
+    //--------------------Used to store/get times-------------------
     char timeBuffer [26];
     time_t rawtime;
     struct tm * timeinfo;
     struct timeval tvl;
+    
+    //--------------Basic information need to be logged--------------
     int RTUid;
     //buttons, True for on and open. False for closed and off
     bool S1;
@@ -108,14 +120,12 @@ struct LogData
     char sendBuffer[200];
 };
 
-
-using namespace std;
-
+//RTU classes
 class RTU{
 private:
-    LogData RTULogData;
-    
+    LogData RTULogData;//Log data
 public:
+    //public methods, getters, setters and constructors
     int returnTypeEvent(){return RTULogData.typeEventID;}
     string getSendBuffer();
     int count[4] = {0,0,0,0};
@@ -130,23 +140,26 @@ public:
     void concatBuffer();
     
 };
+//concatenate a buffer with data separated by "|"
 void RTU::concatBuffer(){
     bzero(RTULogData.sendBuffer, 200);
     char token = '|';
     sprintf(RTULogData.sendBuffer, "%s%c%d%c%d%c%d%c%d%c%d%c%d%c%u%c",RTULogData.timeBuffer,token, RTULogData.RTUid,token,RTULogData.S1,token,RTULogData.S2,token,RTULogData.B1,token,RTULogData.B2,token,RTULogData.Voltage,token, RTULogData.typeEventID,token);
-    
+    //vertify the buffer
     cout << "send buffer is " << RTULogData.sendBuffer << endl;
-    
 }
+//getter for send buffer
 string RTU::getSendBuffer(){
     string str(RTULogData.sendBuffer);
     return str;
 }
+//clear the event for regular update
 void RTU::clearTypeEvent(){
     RTULogData.typeEventID = REGULAR;
 }
+
+//print all the informations
 void RTU::print(){
-    
     cout << "Status for S1,S2,B1,B2:" << RTULogData.S1 << " " << RTULogData.S2 << " " << RTULogData.B1 << " " << RTULogData.B2 << " " << endl;
     cout << "Status for S1,S2,B1,B2:" << count[2] << " " << count[3] << " " << count[0] << " " << count[1] << " " << endl;
     
@@ -155,26 +168,28 @@ void RTU::print(){
     cout << "Time stamp : " << RTULogData.timeBuffer << endl;
     cout << "my buffer is " << RTULogData.sendBuffer << endl;
 }
+//set the time of event
 void RTU::setTime(){
-    char tempBuffer[26];
+    char tempBuffer[26];//store the time string
     int millisec;
-    gettimeofday(&RTULogData.tvl, NULL);
+    gettimeofday(&RTULogData.tvl, NULL);//get time of date
+    //used to calculate the time to millsecond
     millisec = lrint(RTULogData.tvl.tv_usec / 1000.0); //round to nearst millsecond
     if(millisec >= 1000){
         millisec -= 1000;
         RTULogData.tvl.tv_sec++;
     }
-    //time (&RTULogData.rawtime);
+    //format the time for our database
     RTULogData.timeinfo = localtime (&RTULogData.tvl.tv_sec);
     strftime(tempBuffer, sizeof(tempBuffer), "%Y-%m-%d %H:%M:%S", RTULogData.timeinfo);
     sprintf(RTULogData.timeBuffer, "%s.%03d",tempBuffer,millisec);
-    
-    // cout << "Current local time and date: " << asctime(RTULogData.timeinfo) << endl;
-    //  cout << buffer << endl;
+
 }
+//ID setter
 void RTU::setRTUid(int id){
     RTULogData.RTUid = id;
 }
+//button/switch setter
 void RTU::setStatus(int choice, bool change){
     switch (choice) {
         case 1:
@@ -194,12 +209,15 @@ void RTU::setStatus(int choice, bool change){
             break;
     }
 }
+//voltage setter
 void RTU::setVoltage(unsigned short V){
     RTULogData.Voltage = V;
 }
+//type event setter
 void RTU::setTypeEvent(typeEvent id){
     RTULogData.typeEventID = id;
 }
+//constructor
 RTU::RTU(){
     cout << "Globel RTU initilize"<<endl;
 }
@@ -207,7 +225,9 @@ RTU::RTU(){
 //event counter
 volatile int eventCounter = 0;
 
-RTU r1;
+RTU r1; //initilize R1 as a globel variable
+
+//example adc program
 uint16_t get_ADC(int ADC_chan)
 {
     uint8_t spiData[3];
@@ -227,25 +247,26 @@ uint16_t get_ADC(int ADC_chan)
     return ((spiData[1] << 8) | spiData[2]);
 }
 
-
+//socket class
 class socketObj{
 private:
-    // RTU r1;
-    struct ifreq ifr;//for getting ip
+    //-----------------------used for getting ip and RTUid------------------------------
+    struct ifreq ifr;
     char ip_address[13];
     const char s[2] = " ";
     const char c[2] = ".";
+    int myMachine;
+
+    //----------------------------parameters for socket-----------------------------
     int sock;
     int length;
     int n;
     int port;
-    RTU r1;
-    int myMachine;
     struct sockaddr_in server;
     struct sockaddr_in client;
     struct sockaddr_in clientCommand;
-    
-    char buf[7];//test
+    RTU r1;
+    char buf[7];//command from console operator
     socklen_t fromlen;
 public:
     int getRTUID();
@@ -255,19 +276,20 @@ public:
     void getIP();
     string receiveFrom();
 };
+//get the command from console operator
 string socketObj::receiveFrom(){
     n = recvfrom(sock, buf, sizeof(buf), 0, (struct sockaddr *)&clientCommand, &fromlen);
     if(n < 0)
         cout << "Receive error " << endl;
     
-    // cout << "buf is " << buf << endl;
     string str(buf);
-    // cout << "Length of string is " << str.length() << endl;
     return str;
 }
+//get RTU id
 int socketObj::getRTUID(){
     return myMachine;
 }
+//get the IP dynamically
 void socketObj::getIP(){
     //get IP
     /*AF_INET - to define IPv4 Address type.*/
@@ -292,9 +314,11 @@ void socketObj::getIP(){
     token = strtok(temp, s);
     myMachine = atoi(token);
 }
+//get the port number
 void socketObj::getPort(int num){
     port = num;
 }
+//socket setup
 void socketObj::setupSocket(){
     int boolval = 1; //use for socket option, to allow broadcast
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
@@ -330,12 +354,10 @@ void socketObj::setupSocket(){
     if(n < 0)
         cerr << "receive error " << endl;
     
-    
-    
-    
     //get the length
 }
 
+//send the buffer from RTU class to socket
 void socketObj::send(RTU r1){
     string temp = r1.getSendBuffer();
     char *tempBuf = (char*)temp.c_str();
@@ -345,8 +367,9 @@ void socketObj::send(RTU r1){
     
 }
 
-socketObj s1;
+socketObj s1;//constructed socket object
 
+//-----------------------------turn LED threads---------------------------------
 void *turnLEDS(void* ptr){
     cout << "Thread turnLEDS initilzied" << endl;
     while(1){
@@ -405,7 +428,7 @@ void *turnLEDS(void* ptr){
     
 }
 
-
+//-----------------------------Button and Switch Iterrupt handler---------------------------
 void B1Interrupt() {
     gettimeofday(&interruptTimeB1, NULL);
     cout << "interrupt happened" << endl;
@@ -499,12 +522,11 @@ void S2Interrupt() {
 
     s1.send(r1);
     sevenSeg(r1.returnTypeEvent());
-
-    
     
 }
 
 
+//----------------------------Reading ADC thread-------------------------------
 void *readingADC(void* ptr){
     uint16_t ADCvalue;
     uint16_t PADCvalue = 0;
@@ -514,7 +536,7 @@ void *readingADC(void* ptr){
         //return -1 ;
     }
     
-    
+    //set up scheduler
     struct sched_param param;
     param.sched_priority = 51;
     int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
@@ -550,6 +572,7 @@ void *readingADC(void* ptr){
         cout << "MISSED WINDLW " << endl;
     }
     
+    //set bounds and flags
     int adcUpperBound = 350;
     int adcLowerBound = 150;
     int i = 0;
@@ -566,14 +589,17 @@ void *readingADC(void* ptr){
             cout << "Readfile " << endl;
         }
         
+        //read and set values
         ADCvalue = get_ADC(ADC_CHANNEL);
         r1.setVoltage(ADCvalue);
         
+        
+        //flags used to make sure the event only being logged once
+        //other wise there will be so many events
         if(ADCvalue == PADCvalue){
             if(noPowerFlag == 0){
                 r1.setTime();
                 r1.setTypeEvent(ADCPOWER);
-              //  r1.print();
                 r1.concatBuffer();
                 sevenSeg(r1.returnTypeEvent());
                 s1.send(r1);
@@ -587,15 +613,11 @@ void *readingADC(void* ptr){
                 if(adcBoundFlag == 0){
                     r1.setTime();
                     r1.setTypeEvent(ADCBOUND);
-              //      r1.print();
                     r1.concatBuffer();
-
                     s1.send(r1);
                     sevenSeg(r1.returnTypeEvent());
                     adcBoundFlag = 1;
-
                 }
-
             }
             else
                 adcBoundFlag = 0;
@@ -605,6 +627,8 @@ void *readingADC(void* ptr){
     
 }
 
+
+//-----------------------------wiringpi setup and pinmode-------------------------
 int setupWiringPiFunction() {
     // sets up the wiringPi library
     if (wiringPiSetup () < 0) {
@@ -645,6 +669,8 @@ int setupWiringPiFunction() {
     
     // set Pin 17/0 generate an interrupt on high-to-low transitions
     // and attach myInterrupt() to the interrupt
+    
+    //-----------------------wiringpi GPIO interrupt setup -------------------------
     if ( wiringPiISR (BTN1, INT_EDGE_FALLING, &B1Interrupt) < 0 ) {
         cerr<<"Not able to setup IRS"<<endl;
         return -1;
@@ -667,6 +693,7 @@ int setupWiringPiFunction() {
 int main(int argc, const char * argv[]) {
     
     
+    //set up socket
     s1.getPort(atoi(argv[1]));
     s1.setupSocket();
     s1.getIP();
@@ -675,7 +702,7 @@ int main(int argc, const char * argv[]) {
         cerr << "Error setup RUT" << endl;
         return -1;
     }
-    
+    //used for rebounse
     gettimeofday(&lastInterruptTimeB1, NULL);
     gettimeofday(&lastInterruptTimeB2, NULL);
     
@@ -686,15 +713,14 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
     
-    r1.setRTUid(s1.getRTUID());
-  //  cout<<"RUT id is "<< s1.getRTUID();
+    r1.setRTUid(s1.getRTUID());//dynamically get ID
     
-    //create thread
+    //create threads
     pthread_t adcReading, receiveThread;
     pthread_create(&adcReading, NULL, readingADC, NULL);
     pthread_create(&receiveThread, NULL, turnLEDS, NULL);
     
-    // ------set up real task -------------
+    // ---------------------set up real time task -------------------------
     struct sched_param param;
     param.sched_priority = 51;
     int check = sched_setscheduler(0, SCHED_FIFO, &param); //using FIFO
@@ -741,15 +767,12 @@ int main(int argc, const char * argv[]) {
         if(num_periods > 1){
             cout << "Readfile " << endl;
         }
+        //periodic update
         r1.setTime();
         r1.clearTypeEvent();
-     //   r1.print();
         r1.concatBuffer();
-      //  sevenSeg(r1.returnTypeEvent());
         s1.send(r1);
-      //  cout << eventCounter<<endl;
         eventCounter = 0;
-        // delay(10000);
     }
     
     

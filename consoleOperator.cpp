@@ -20,37 +20,32 @@
 
 using namespace std;
 int main(int argc, char* argv[]){
+    //defines
     char signal[MSG_SIZE];
     char buffer[MSG_SIZE];
     char* temp;
-    int dummy = system("mkfifo N_pipe2");
-    
+    int dummy = system("mkfifo N_pipe2");//create named pipe
     int pipe_N_pipe2;
     if((pipe_N_pipe2 = open("N_pipe2",O_RDONLY)) < 0){
         cout << "N_pipe2 error" << endl;
         exit(-1);
     }
     
-    //	cout << "1" << endl;
+    //block untile receive
     if(read(pipe_N_pipe2,&signal,sizeof(signal)) < 0)
         cout << "N_pipe2 reading1 error\n" << endl;
     
     cout << "Signal is:" << signal<<endl;
-    char delim[] = "|";
-   // cout << "1" << endl;
-    //cout << signal << endl;
+    char delim[] = "|";//parse by token
     int RTU1, RTU2, port;
     temp = strtok(signal,delim);
-   // cout << temp << endl;
     RTU1 = atoi(temp);
-   // cout << RTU1 << endl;
     temp = strtok(NULL, delim);
     RTU2 = atoi(temp);
-  //  cout << RTU2 << endl;
     temp = strtok(NULL, delim);
     port = atoi(temp);
-  //  cout << port << endl;
-    
+
+    //define for sockets
     struct sockaddr_in anybody;    // for the socket configuration
     int sock, n;
     int boolval = 1;            // for a socket option
@@ -77,55 +72,45 @@ int main(int argc, char* argv[]){
     char ch;
     do
     {
+        
+        //menu to choose RTU1 or RTU2
         if(choice == 0){
             cout << "Which RTU you want to send to? 1 for ID: " << RTU1 << " 2 for ID: " << RTU2 << endl;
             while((ch=getchar()) != '\n' && ch!=EOF);
             scanf("%d",&choice);
-          //  cin >> choice;
             if(choice == 1){
-                //  while((ch=getchar()) != '\n' && ch!=EOF);
                 sprintf(ip, "128.206.19.%d",RTU1);
                 cout << "ip is " << ip << endl;
                 anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
-                // bzero: to "clean up" the buffer. The messages aren't always the same length.
                 bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
-                //cleanbuffer(&buffer);
                 cout << "LED1 or LED2" <<endl;
-                // fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
                 cin >> buffer;
                 
-                
-                // send message to anyone there...
+                // send message
                 n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
                 if(n < 0)
                     cout << "error" << endl;
             }
             else if(choice == 2){
-                //  while((ch=getchar()) != '\n' && ch!=EOF);
                 sprintf(ip, "128.206.19.%d",RTU2);
                 cout << "ip is " << ip << endl;
                 anybody.sin_addr.s_addr = inet_addr(ip);    // broadcast address (Lab)
-                // bzero: to "clean up" the buffer. The messages aren't always the same length.
                 bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
-                //cleanbuffer(&buffer);
                 cout << "LED1 or LED2" <<endl;
-                //fgets(buffer,MSG_SIZE-1,stdin); // MSG_SIZE-1 'cause a null character is added
                 cin >> buffer;
-                // send message to anyone there...
+                // send message
                 n = sendto(sock, buffer, sizeof(buffer)-1, 0, (const struct sockaddr *)&anybody, length);
                 if(n < 0)
                     cout << "error" << endl;
             }
         }
-        
-        
+
         else{
             cout << "only 2 RTU connected!" << endl;
             choice = 0;
         }
+
         
-        
-        
-    } while(choice != '!');
+    } while(choice != '!');//'!' to quit the program
     
 }

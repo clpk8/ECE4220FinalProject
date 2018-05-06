@@ -24,18 +24,21 @@ using namespace std;
 
 struct sockaddr_in anybody;    // for the socket configuration
 
+//-------------------------------Sqlite3 defines----------------------------
 sqlite3 *db;
 char *zErrMsg = 0;
 int rc;
 char *sql;
-int syncFlag = 0;
+int syncFlag = 0;//used to make sure all RTU ids locaed
+vector<int> ipID;//vector used to store RTUids
+
 
 void error(const char *msg)
 {
     perror(msg);
     exit(0);
 }
-
+//call back function for sqlite3
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
     for(i = 0; i<argc; i++) {
@@ -44,10 +47,6 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     printf("\n");
     return 0;
 }
-
-
-
-vector<int> ipID;
 
 // Receiving thr: constantly waits for messages. Whatever is received is displayed.
 void *receiving(void *ptr);
@@ -67,14 +66,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Opened database successfully\n");
     }
     
-    char signal[MSG_SIZE] = "Start";
+    char signal[MSG_SIZE] = "Start";//broadcast start message
+    //define for sockets
     int sock, n;
-    //  unsigned int length = sizeof(struct sockaddr_in);    // size of structure
-    //    char buffer[MSG_SIZE];        // to store received messages or messages to be sent.
-    //    LogData buffer;    // to store received messages or messages to be sent.
     int boolval = 1;            // for a socket option
     pthread_t thread_rec;        // thread variable
-    
     if(argc != 2)
     {
         cout << "usage: " << argv[0] << " port" << endl;
@@ -88,16 +84,10 @@ int main(int argc, char *argv[])
     sock = socket(AF_INET, SOCK_DGRAM, 0); // Creates socket. Connectionless.
     if(sock < 0)
         cerr << "Error: socket" << endl;
-    //error("Error: socket");
     
     int length = sizeof(anybody);
     bind(sock, (struct sockaddr *)&anybody, length);
-    //         if (n < 0)
-    //        {
-    //            cerr << "Error binding socket." << endl;
-    //            //printf("Error binding socket.\n");
-    //            exit(-1);
-    //        }
+
     
     // change socket permissions to allow broadcast
     if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
@@ -109,18 +99,15 @@ int main(int argc, char *argv[])
     
     
     anybody.sin_addr.s_addr = inet_addr("128.206.19.255");    // broadcast address (Lab)
-    
-    
-   // cout << "This programs displays whatever it receives." << endl;
-   // cout << "It also transmits whatever the user types, max. 40 char. (! to exit):" << endl;
-    
-    
+
+    //broadcast start message
     n = sendto(sock, signal, strlen(signal), 0, (const struct sockaddr *)&anybody, length);
     if(n < 0)
         error("Error: sendto");
     pthread_create(&thread_rec, NULL, receiving, (void *)&sock);    // for receiving
 
     
+    //wait till two RTUids received
     sem_wait(&semaphore);
     while(1){
         if(syncFlag == 2){
@@ -149,9 +136,11 @@ int main(int argc, char *argv[])
 
 void *receiving(void *ptr)
 {
+    
     int *sock, n, i;
     char buffer[MSG_SIZE];    // to store received messages or messages to be sent.
     
+    //data
     int RTUID;
     int Switch1Status, Switch2Status, Button1Status, Button2Status;
     int Voltage;
@@ -161,7 +150,7 @@ void *receiving(void *ptr)
     char *value;
     int Event;
     
-    char delim[] = "|";
+    char delim[] = "|";//token used for parsing
     
     sock = (int *)ptr;        // socket identifier
     unsigned int length = sizeof(struct sockaddr_in);        // size of structure
@@ -172,14 +161,11 @@ void *receiving(void *ptr)
     {
         bzero(buffer,MSG_SIZE);    // sets all values to zero. memset() could be used
         // receive message
-        
         n = recvfrom(*sock, buffer, 100, 0, (struct sockaddr *)&anybody, &length);
         if(n < 0)
             cerr << "Error: recvfrom" << endl;
-        //error("Error: recvfrom");
-        
-        //cout << "This was received: " << buffer << endl;
-        //printf("This was received: %s\n", buffer);
+
+        //parse by token'|'
         if(strcmp(buffer,"Start") != 0){
             value = strtok(buffer, delim);
             TimeStamp = value;
@@ -202,22 +188,18 @@ void *receiving(void *ptr)
             value = strtok(NULL, delim);
             Voltage = atoi(value);
             
-            
             value = strtok(NULL, delim);
             Event = atoi(value);
             
             
-            
+            //store RTUids and aovid repetition
             if(find(ipID.begin(), ipID.end(), RTUID) == ipID.end()){
                 ipID.push_back(RTUID);
                 sem_post(&semaphore);
                 syncFlag++;
             }
             
-            
-            
-            //        cout << Event << endl << endl;
-            
+            //switch to get the correct event message
             switch(Event)
             {
                 case 0: EventOccuried = "S10FF";
@@ -252,16 +234,10 @@ void *receiving(void *ptr)
                     break;
             }
             
-            //value = strtok(NULL, delim);
-            //PowerFlag = atoi(value);
-            
-        //    cout << "This was received: " << TimeStamp << " " << RTUID << " " << Switch1Status << " " << Switch2Status << " " << Button1Status << " " << Button2Status << " " << Voltage << " " << EventOccuried << endl;
-        //    cout << "Vector: " << ipID[0] << endl;
-        //    cout << "Vector: " << ipID[1] << endl;
-            
-            
+            //get sql query statment
             asprintf(&sql, "insert into RTUEventLog (TimeStamp, RTUID, Switch1Status, Switch2Status, Button1Status, Button2Status, Voltage, EventOccuried) values('%s',%d,%d,%d,%d,%d,%d,'%s');",TimeStamp.c_str(),RTUID,Switch1Status,Switch2Status,Button1Status,Button2Status,Voltage,EventOccuried.c_str());
             
+            //execute query
             rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
             
             if( rc != SQLITE_OK ){
@@ -270,11 +246,8 @@ void *receiving(void *ptr)
             }else{
                 fprintf(stdout, "Records created successfully\n");
             }
-            
         }
-     
     }
-    
     pthread_exit(0);
 }
 
