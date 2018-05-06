@@ -692,6 +692,12 @@ int setupWiringPiFunction() {
 
 int main(int argc, const char * argv[]) {
     
+    //makesure port number is provided
+    if(argc < 2){
+        
+        cout << "Please enter port number" << endl;
+        return -1;
+    }
     
     //set up socket
     s1.getPort(atoi(argv[1]));
@@ -706,12 +712,7 @@ int main(int argc, const char * argv[]) {
     gettimeofday(&lastInterruptTimeB1, NULL);
     gettimeofday(&lastInterruptTimeB2, NULL);
     
-    //makesure port number is provided
-    if(argc < 2){
-        
-        cout << "Please enter port number" << endl;
-        return -1;
-    }
+
     
     r1.setRTUid(s1.getRTUID());//dynamically get ID
     
